@@ -10,7 +10,8 @@ public:
 private:
 	int id;
 	std::string name;
-	std::map articles;
+	std::map<int, Article> articles;
+	int next_free_index;
 
 };
 
