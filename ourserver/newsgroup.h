@@ -6,11 +6,20 @@
 
 class NewsGroup{
 public:
+	NewsGroup(int ind, std::string n);
+	~NewsGroup();
 
+	int getId();
+	string:: getName();
+	std::map<int, Article> getArticles();
+	void print();
+	
 private:
 	int id;
+	int next_free_index;
+	
 	std::string name;
-	std::map articles;
+	std::map<int, Article> articles;
 
 };
 
