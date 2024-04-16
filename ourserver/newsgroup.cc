@@ -30,7 +30,11 @@ bool NewsGroup::create_article(std::string title, std::string author, std::strin
 }
 
 
+
 std::string NewsGroup::to_string(){
+
+	return "not implemented";
+	/*
 	std::string s = "Group Name: " + name + " Id: " + std::to_string(id)
 				+ "\nNumber of Articles: " + std::to_string(next_free_index -1);
 				
@@ -44,6 +48,8 @@ std::string NewsGroup::to_string(){
 		}
 	}
 	return s;
+
+	*/
 }
-	
+
 
