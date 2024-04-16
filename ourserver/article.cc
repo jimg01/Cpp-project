@@ -23,7 +23,7 @@ Article::Article(int ind, std::string titl, std::string auth, std::string txt){
 }
 
 
-std::string Article::toString(){
+std::string Article::to_string(){
 	return "Title: " + title + "\nAuthor: " + author
 		 + "\nId: " + std::to_string(id) + "\nText: " + text;
 			

@@ -11,11 +11,11 @@ public:
 	NewsGroup(int ind, std::string n);
 	~NewsGroup();
 
-	int getId();
-	std::string getName();
-	std::map<int, Article> NewsGroup::map_of_articles();
+	int get_id();
+	std::string get_name();
+	std::map<int, Article> map_of_articles();
 	bool create_article(std::string name, std::string author, std::string text);
-	void print();
+	std::string to_string();
 	bool create_article();
 	
 private:

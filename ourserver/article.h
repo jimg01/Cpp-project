@@ -10,7 +10,7 @@ class Article{
 		Article(int ind);
 		Article(int ind, std::string titl, std::string auth, std::string txt);
 		//~Article(); 	// not req due to no pointers atm
-		std::string toString();
+		std::string to_string();
 		
 	private:
 		std::string title, author, text;
