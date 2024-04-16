@@ -3,6 +3,8 @@
 
 #include <map> //??
 #include <string>
+#include <vector>
+#include "article.h"
 
 class NewsGroup{
 public:
@@ -14,11 +16,16 @@ public:
 	void delete_article(int id); //throws error if no such article exists
 	Article get_article(int id); //throws error if no such article exists
 
+	int get_id();
+	std::string get_name();
+	std::string to_string();
+	
 private:
 	int id;
+	int next_free_index;	//change to be time-based instead?
+	
 	std::string name;
 	std::map<int, Article> articles;
-	int next_free_index; //use time instead?
 
 };
 

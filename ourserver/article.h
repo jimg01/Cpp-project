@@ -3,16 +3,23 @@
 
 #include <string>
 
-class Article{
-	public:
-		Article(int id, std::string name, std::string author, std::string text);
-		~Article();
 
+
+
+class Article{
+
+	public:
+		Article(int ind);
+		Article(int ind, std::string titl, std::string auth, std::string txt);
+		//~Article(); 	// not req due to no pointers atm
+		std::string to_string();
+		
 	private:
-		//int id;
-		std::string name;
-		std::string author;
-		std::string text;
+		std::string title, author, text;
+		int id;
+
+	
 };
 
 #endif
+
