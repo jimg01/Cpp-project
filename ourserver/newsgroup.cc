@@ -23,13 +23,21 @@ std::map<int, Article> NewsGroup::map_of_articles(){
 	return articles;	
 }
 
-bool NewsGroup::create_article(std::string title, std::string author, std::string text){
-		Article a(next_free_index, title, author, text);
-		next_free_index++;
-		return true;
+bool NewsGroup::create_article(std::string title, std::string author, std::string text){	
+	articles[next_free_index] = Article(next_free_index, title, author, text);
+	next_free_index++;
+	return true;
 }
 
+void delete_article(int id){ //throws error if no such article exists
+	articles.at(id); //for out of range error
+	articles.erase(id);
+} 
 
+Article get_article(int id){ //throws error if no such article exists
+	auto article = articles.at(id); //for out of range error
+	return article;
+}
 
 std::string NewsGroup::to_string(){
 

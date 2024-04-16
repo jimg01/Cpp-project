@@ -11,7 +11,7 @@ public:
 	NewsGroup();
 	~NewsGroup();
 
-	std::map<Article> list_articles();
+	std::map<Article> map_of_articles();
 	bool create_article(std::string name, std::string author, std::string text); //generate id
 	void delete_article(int id); //throws error if no such article exists
 	Article get_article(int id); //throws error if no such article exists
