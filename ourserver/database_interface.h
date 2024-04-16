@@ -7,13 +7,13 @@
 
 class Database_interface {
 public:
-	virtual std::vector<NewsGroup> list_NG(); //retun map insted?
+	virtual std::vector<std::pair<int, std::string>> list_NG(); //retun map insted? no
 	virtual bool create_NG(std::string name);
 	virtual bool delete_NG(int id_NG);
-	virtual std::vector<Article> list_articles(int id_NG);
-	virtual bool create_article(int id_NG, std::string name, std::string author, std::string text); //return map insted?
+	virtual std::vector<std::pair<int, std::string>> list_articles(int id_NG); //return map instead? no
+	virtual bool create_article(int id_NG, std::string name, std::string author, std::string text); 
 	virtual void delete_article(int id_NG, int id_article);
-	virtual Article get_article(int id_NG, int id_article);
+	virtual std::vector<std::string> get_article(int id_NG, int id_article);
 
 };
 

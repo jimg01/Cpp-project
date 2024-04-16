@@ -22,6 +22,17 @@ Article::Article(int ind, std::string titl, std::string auth, std::string txt){
 	int id = ind;
 }
 
+const std::string& Article::get_name() const{
+	return name;
+}
+
+const std::string& get_author() const{
+	return author;
+}
+
+const std::string& get_text() const{
+	return text;
+}
 
 std::string Article::to_string(){
 	return "Title: " + title + "\nAuthor: " + author

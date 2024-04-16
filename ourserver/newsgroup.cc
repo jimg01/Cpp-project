@@ -11,15 +11,15 @@ NewsGroup::NewsGroup(int ind, std::string n){
 
 NewsGroup::~NewsGroup(){}
 
-int NewsGroup::get_id(){
+int NewsGroup::get_id() const{
 	return id;
 }
 
-std::string NewsGroup::get_name(){
+const std::string& NewsGroup::get_name() const{
 	return name;
 }
 
-std::map<int, Article> NewsGroup::map_of_articles(){
+const std::map<int, Article>& NewsGroup::map_of_articles() const{
 	return articles;	
 }
 
@@ -34,7 +34,7 @@ void delete_article(int id){ //throws error if no such article exists
 	articles.erase(id);
 } 
 
-Article get_article(int id){ //throws error if no such article exists
+const Article get_article(int id){ //throws error if no such article exists
 	auto article = articles.at(id); //for out of range error
 	return article;
 }

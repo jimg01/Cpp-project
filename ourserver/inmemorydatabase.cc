@@ -9,10 +9,10 @@ InMemoryDatabase::InMemoryDatabase(){
 
 InMemoryDatabase::~InMemoryDatabase() = default;
 
-std::vector<NewsGroup> InMemoryDatabase::list_NG(){
-	std::vector<NewsGroup> list_of_NG;
+std::vector<std::pair<int, std::string>> InMemoryDatabase::list_NG(){
+	std::vector<std::pair<int, std::string>> list_of_NG;
 	for (auto it = news_groups.begin(); it != news_groups.end(): ++it){
-		list_of_NG.pushback((*it).value());
+		list_of_NG.pushback(std::make_pair((*it), (*it).value().get_name()) );
 	}
 	return list_of_NG;
 }
@@ -26,10 +26,9 @@ bool InMemoryDatabase::create_NG(std::string name){
 		++next_free_index;
 		return true;
 	}
-	
 }
 
-bool InMemoryDatabase::delete_NG(int id_NG) override{
+bool InMemoryDatabase::delete_NG(int id_NG){
 	try{
 		news_groups.at(id_NG); //throws out_of_range error
 		news_groups.erase(id_NG);
@@ -43,14 +42,14 @@ bool InMemoryDatabase::delete_NG(int id_NG) override{
 	
 }
 
-std::vector<Article> InMemoryDatabase::list_articles(int id_NG){
+std::vector<std::pair<int, std::string>> InMemoryDatabase::list_articles(int id_NG){
 	//add errorhandling
-	std::vector<Article> list_of_articles{};
+	std::vector<std::pair<int, std::string>> list_of_articles{};
 	try{
 		auto NG = news_groups.at(id_NG);
-		std::map<int, Article> map_of_articles = NG.map_of_articles();
+		std::map<int, std::pair<int, std::string>> map_of_articles = NG.map_of_articles();
 		for (auto it = map_of_articles.begin(); it != map_of_articles.end(): ++it){
-			list_of_articles.pushback((*it).value());
+			list_of_articles.pushback(std::make_pair((*it), (*it).value().get_name()) );
 		}
 	}
 	catch(const std::out_of_range& e){
@@ -90,11 +89,12 @@ void InMemoryDatabase::delete_article(int id_NG, int id_article){
 	}
 }
 
-Article InMemoryDatabase::get_article(int id_NG, int id_article){
+std::vector<std::string> InMemoryDatabase::get_article(int id_NG, int id_article){
 	try{
 		auto NG = news_groups.at(id_NG);
 		try{
-			return NG.get_article(id_article); 
+			Article art = NG.get_article(id_article);
+			return std::vector<std::string> article{art.get_name(), art.get_author(), art.get_text()}
 		}
 		catch(const std::out_of_range& e){ //catch error thrown by get_article in NewsGroup
 			//artcie does not exist
