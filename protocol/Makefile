@@ -23,17 +23,18 @@ LDFLAGS   = -g -L../lib
 #LDFLAGS +=  -stdlib=libc++
 
 # Libraries
-LDLIBS = -lclientserver
+
+#LDLIBS = -lclientserver
 
 # Targets
-PROGS = testHandler
+PROGS = client testHandler
 
 all: $(PROGS)
 
 # Targets rely on implicit rules for compiling and linking
 # The dependency on libclientserver.a is not defined.
-inmemorydatabase: inmemorydatabase.o article.o newsgroup.o 
-testMain: testMain.o newsgroup.o article.o
+
+client: client.o
 testHandler: testHandler.o messagehandler.o connection.o
 
 SRC = $(wildcard *.cc)
@@ -49,7 +50,9 @@ clean:
 
 distclean: clean
 	-rm $(SRC:.cc=.d)
-	-rm -r $(addsuffix .dSym,$(PROGS)) # for cleaning on Macs
+
+#	-rm -r $(addsuffix .dSym,$(PROGS)) # for cleaning on Macs
+
 
 # Include the *.d files
 -include $(SRC:.cc=.d)
