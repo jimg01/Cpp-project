@@ -36,8 +36,11 @@ class MessageHandler {
 	 * @param conn
 	 *            The connection to use messages
 	 */
-	MessageHandler(Connection conn): conn(conn) {}
-
+	MessageHandler(Connection conn): conn(std::move(conn)) {}
+	// to invoke move constructor, since copy constructors and assignments
+	//  are forbidden in Connection-class!
+	
+	
 	/**
 	 * Set the log window to use.
 	 * 

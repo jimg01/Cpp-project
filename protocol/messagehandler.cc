@@ -133,6 +133,14 @@ void MessageHandler::sendByte(int code) {
 	*/
 }
 
+// to invoke move constructor? since copy constructors and assignments
+//  are forbidden in Connection-class!
+/*MessageHandler::MessageHandler(Connection conn): conn(std::move(conn)){ 
+	//conn = std::move(conn);	
+}
+//USING INITIALIZER LIST IN HEADER FILE INSTEAD
+*/
+
 int MessageHandler::recvByte(){
 	int code = conn.read();
 	if (code == Connection.CONNECTION_CLOSED) {

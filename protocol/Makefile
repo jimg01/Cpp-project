@@ -10,7 +10,7 @@ DEPFLAGS = -MT $@ -MMD -MP -MF $*.d
 # Define preprocessor, compiler, and linker flags. Uncomment the # lines
 # if you use clang++ and wish to use libc++ instead of GNU's libstdc++.
 # -g is for debugging.
-<<<<<<< HEAD
+
 CPPFLAGS  = -I../include
 CXXFLAGS =  -O2 -Wall -Wextra -pedantic-errors -Wold-style-cast
 CXXFLAGS += -std=c++11
@@ -26,7 +26,7 @@ LDFLAGS   = -g -L../lib
 LDLIBS = -lclientserver
 
 # Targets
-PROGS = inmemorydatabase testMain
+PROGS = testHandler
 
 all: $(PROGS)
 
@@ -34,6 +34,7 @@ all: $(PROGS)
 # The dependency on libclientserver.a is not defined.
 inmemorydatabase: inmemorydatabase.o article.o newsgroup.o 
 testMain: testMain.o newsgroup.o article.o
+testHandler: testHandler.o messagehandler.o connection.o
 
 SRC = $(wildcard *.cc)
 
