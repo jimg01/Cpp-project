@@ -79,7 +79,7 @@ class MessageHandler {
 	 *             If the server died
 	 */
 	void sendIntParameter(int param);
-#if 0
+
 	/**
 	 * Transmit a string parameter, according to the protocol.
 	 * 
@@ -88,15 +88,7 @@ class MessageHandler {
 	 * @throws ConnectionClosedException
 	 *             If the server died
 	 */
-	void sendStringParameter(String param){
-		sendCode(Protocol.PAR_STRING);
-		sendInt(param.length());
-		for (int i = 0; i < param.length(); i++) {
-			sendByte(param.charAt(i));
-			logWindow.logChar(param.charAt(i));
-		}
-	}
-
+	void sendStringParameter(std::string param);
 	
 	/**
 	 * Receive a command code or an error code from the server.
@@ -105,11 +97,8 @@ class MessageHandler {
 	 * @throws ConnectionClosedException
 	 *             If the server died
 	 */
-	int recvCode(){
-		int code = recvByte();
-		logWindow.logCode(code);
-		return code;
-	}
+	int recvCode();
+
 
 	/**
 	 * Receive an int value from the server.
@@ -118,19 +107,8 @@ class MessageHandler {
 	 * @throws ConnectionClosedException
 	 *             If the server died
 	 */
-	int recvInt(){
-		int b1 = recvByte();
-		logWindow.logByte(b1);
-		int b2 = recvByte();
-		logWindow.logByte(b2);
-		int b3 = recvByte();
-		logWindow.logByte(b3);
-		int b4 = recvByte();
-		logWindow.logByte(b4);
-
-		return b1 << 24 | b2 << 16 | b3 << 8 | b4;
-	}
-
+	int recvInt();
+	
 	/**
 	 * Receive an int parameter from the server.
 	 * 
@@ -138,14 +116,7 @@ class MessageHandler {
 	 * @throws ConnectionClosedException
 	 *             If the server died
 	 */
-	int recvIntParameter(){
-		int code = recvCode();
-		if (code != Protocol.PAR_NUM) {
-			throw new ProtocolViolationException("Receive numeric parameter",
-					Protocol.PAR_NUM, code);
-		}
-		return recvInt();
-	}
+	int recvIntParameter();
 
 	/**
 	 * Receive a string parameter from the server.
@@ -154,26 +125,8 @@ class MessageHandler {
 	 * @throws ConnectionClosedException
 	 *             If the server died
 	 */
-	String recvStringParameter(){
-		int code = recvCode();
-		if (code != Protocol.PAR_STRING) {
-			throw new ProtocolViolationException("Receive string parameter",
-					Protocol.PAR_STRING, code);
-		}
-		int n = recvInt();
-		if (n < 0) {
-			throw new ProtocolViolationException("Receive string parameter",
-					"Number of characters < 0");
-		}
-		StringBuffer result = new StringBuffer(n);
-		for (int i = 1; i <= n; i++) {
-			char ch = (char) conn.read();
-			result.append(ch);
-			logWindow.logChar(ch);
-		}
-		return result.toString();
-	}
-#endif
+	std::string recvStringParameter();
+
 
 
 };

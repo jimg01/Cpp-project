@@ -3,10 +3,11 @@
 #include <iostream>
 
 int main(){
-	Connection conn;
+	Connection conn("local host", 7777);
 	MessageHandler mh(std::move(conn));
 	mh.sendCode(1);
-	std::cout << "hej" << std::endl;
+	mh.sendStringParameter("hej");
+	//std::cout << "hej" << std::endl;
 	
 	
 }
