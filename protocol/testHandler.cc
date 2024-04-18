@@ -1,9 +1,12 @@
 #include "messagehandler.h"
+#include "connection.h"
 #include <iostream>
 
 int main(){
 	Connection conn;
 	MessageHandler mh(std::move(conn));
-	//std::cout << mh.recvByte() << std::endl;
+	mh.sendCode(1);
+	std::cout << "hej" << std::endl;
+	
 	
 }

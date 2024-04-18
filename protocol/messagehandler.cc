@@ -116,11 +116,11 @@ using std::endl;
 #endif
 
 
-void MessageHandler::sendByte(int code) {
+void MessageHandler::sendByte(int code) {	//works!
 	try {
 			conn.write(char(code));
-		} catch (ConnectionClosedException& e) {
-			throw ConnectionClosedException();
+		} catch (ConnectionClosedException e) {
+			throw (e);
 		}
 	
 
@@ -133,6 +133,13 @@ void MessageHandler::sendByte(int code) {
 	*/
 }
 
+
+void MessageHandler::sendCode(int code) {
+	sendByte(code);
+	//logWindow.logCode(code);
+}
+
+#if 0
 // to invoke move constructor? since copy constructors and assignments
 //  are forbidden in Connection-class!
 /*MessageHandler::MessageHandler(Connection conn): conn(std::move(conn)){ 
@@ -141,17 +148,13 @@ void MessageHandler::sendByte(int code) {
 //USING INITIALIZER LIST IN HEADER FILE INSTEAD
 */
 
+
 int MessageHandler::recvByte(){
 	int code = conn.read();
 	if (code == Connection.CONNECTION_CLOSED) {
 		throw ConnectionClosedException();
 	}
 	return code;
-}
-
-void MessageHandler::sendCode(int code) {
-	sendByte(code);
-	//logWindow.logCode(code);
 }
 
 void MessageHandler::sendInt(int value) {
@@ -169,3 +172,4 @@ void MessageHandler::sendIntParameter(int param) {
 	sendCode(Protocol.PAR_NUM);
 	sendInt(param);
 }
+#endif
