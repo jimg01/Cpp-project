@@ -91,7 +91,7 @@ std::string MessageHandler::recvStringParameter(){
 
 int MessageHandler::recvByte(){
 	int code = conn.read();
-	if (code == Connection::CONNECTION_CLOSED) {
+	if (conn.isConnected()){//if (code == ::CONNECTION_CLOSED) {
 		ConnectionClosedException e;
 		throw (e);	
 	}

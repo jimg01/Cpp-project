@@ -2,26 +2,43 @@
 #include<iostream>
 
 #include"client.h"
-//#include"MH.h"
 
 using std::string;
 using std::cin;
 using std::cout;
+using std::cerr;
+using std::endl;
 
 Client::Client(){}
 
-bool Client::init(const int port){
-    if(port == 1){
-        Client::port = port;
-        return true;
-    }else{
-        return false;
-    }
+MessageHandler Client::init(const int argc, char* argv[]){
+
+    if (argc != 3) {
+                cerr << "Usage: myclient host-name port-number" << endl;
+                exit(1);
+        }
+
+        int port = -1;
+        try {
+                port = std::stoi(argv[2]);
+        } catch (std::exception& e) {
+                cerr << "Wrong port number. " << e.what() << endl;
+                exit(2);
+        }
+
+        Connection conn(argv[1], port);
+        if (!conn.isConnected()) {
+                cerr << "Connection attempt failed" << endl;
+                exit(3);
+        }
+
+        MessageHandler mess(std::move(conn));
+        return mess;
 }
 
 int Client::getPort(){return port;}
 
-int Client::application(){
+int Client::application(MessageHandler mess){
     int num = showOptions();
     cout << num << "\n";
 
@@ -45,16 +62,12 @@ int Client::showOptions(){
 }
 
 
-int main(){
-    cout << "Choose a port for your Client: ";
-    int port;
-    cin >> port;
+int main(int argc, char* argv[]){
+    // cout << "Choose a port for your Client: ";
+    // int port;
+    // cin >> port;
     Client userClient;
-    if(userClient.init(port)){
-        cout << "Port exist, communication established!\n";
-        return userClient.application();
-    }else{
-        cout << "Port failed, no communication\n";
-        return 1;
-    }
+    MessageHandler mess = userClient.init(argc,argv);
+
+    return userClient.application(std::move(mess));
 }
