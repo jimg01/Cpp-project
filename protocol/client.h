@@ -3,6 +3,7 @@
 
 #include"messagehandler.h"
 #include"connection.h"
+#include"protocol.h"
 
 
 class Client{
@@ -10,11 +11,19 @@ class Client{
     Client();
     //~Client();
     MessageHandler init(const int, char*[]);
-    int application(MessageHandler mess);
+    int application(MessageHandler);
     int getPort();
 
     private:
-    int showOptions();
+    void showOptions();
+    void error(const int);
+    void listNewsGroups(MessageHandler);
+    void createNewsGroups(MessageHandler);
+    void deleteNewsGroups(MessageHandler);
+    void listArticle(MessageHandler);
+    void createArticle(MessageHandler);
+    void deleteArticle(MessageHandler);
+    void showArticle(MessageHandler);
     int port;
 
 
