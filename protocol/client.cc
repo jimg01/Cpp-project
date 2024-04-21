@@ -1,5 +1,7 @@
 #include<sstream>
 #include<iostream>
+#include<algorithm>
+#include<limits>
 
 #include"client.h"
 
@@ -47,14 +49,18 @@ int Client::application(MessageHandler mess){
         showOptions();
 
         //cin.ignore(100,'\n');
-        cin >> userInput;
-        cin.ignore(100,'\n');
+        if(cin >> userInput && cin.peek() == '\n'){
+            cin.ignore();
 
-        if(cin.fail()){
-            error(1);
-            cin.clear();
-            cin.ignore(100,'\n');   // vet inte varför jag måste "cleara" den igen???
-        }else{
+        // string temp;
+        // std::getline(cin, temp);
+        // cin.ignore(100,'\n');
+
+        // if(cin.fail() || temp != ""){
+        //     error(1);
+        //     cin.clear();
+        //     cin.ignore(100,'\n');   // vet inte varför jag måste "cleara" den igen???
+        // }else{
             
             switch (userInput) 
             {
@@ -75,15 +81,15 @@ int Client::application(MessageHandler mess){
                     break;
                 
                 case 5:
-                    cout << "hej5";
+                    createArticle(move(mess));
                     break;
                 
                 case 6:
-                    cout << "hej6";
+                    deleteArticle(move(mess));
                     break;
                 
                 case 7:
-                    cout << "hej7";
+                    showArticle(move(mess));
                     break;
 
                 case 8:
@@ -95,7 +101,11 @@ int Client::application(MessageHandler mess){
                     error(1);
                     break;
             }
-        }        
+        }else {
+            error(1);
+            cin.clear();
+            cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        }
     }
     return 0;
 }
@@ -129,12 +139,44 @@ void Client::error(int i){
         cerr << "Invalid Input. Input must consist of an Id (int)" << endl;
         break;
 
+    case 3:
+        cerr << "Invalid Input. Input must consist of a char (y/n)" << endl;
+        break;
+
+    case 4:
+        cerr << "Invalid Input. Article name can not be empty" << endl;
+        break;
+
+    case 5:
+        cerr << "Invalid Input. Article author can not be empty" << endl;
+        break;
+
+    case 6:
+        cerr << "Invalid Input. Article text can not be empty" << endl;
+        break;
+
     default:
         break;
     }
 }
 
-void Client::listNewsGroups(MessageHandler mess){ //Done
+bool Client::cancelCommand(){
+    cout << "Ready to continue (y/n)?: ";
+    string userInput;
+    getline(cin, userInput);
+    std::transform(userInput.begin(), userInput.end(),userInput.begin(),[](unsigned char c) {return std::tolower(c);});
+    if(userInput == "y"){
+        return true;
+    }else if(userInput == "n"){
+        cout << "Command Canceled" << endl;
+        return false;
+    }else {
+        error(3);
+        return cancelCommand();
+    }
+}
+
+void Client::listNewsGroups(MessageHandler mess){ 
     mess.sendCode(int(Protocol::COM_LIST_NG));
     mess.sendCode(int(Protocol::COM_END));
 
@@ -156,13 +198,13 @@ void Client::listNewsGroups(MessageHandler mess){ //Done
     }
     
 }
-void Client::createNewsGroups(MessageHandler mess){ //Done
+void Client::createNewsGroups(MessageHandler mess){ 
 
-    cout << "Enter name of new NewsGroup (Typ \"?c\" to cancel): ";
+    cout << "Enter name of new NewsGroup: ";
     string nameOfNewsGroup;
     std::getline(cin, nameOfNewsGroup);
 
-    if(nameOfNewsGroup != "?c"){
+    if(cancelCommand()){
         mess.sendCode(int(Protocol::COM_CREATE_NG));
         mess.sendStringParameter(nameOfNewsGroup);
         mess.sendCode(int(Protocol::COM_END));
@@ -173,7 +215,8 @@ void Client::createNewsGroups(MessageHandler mess){ //Done
                 cout << "New NewsGroup created. Name: " << nameOfNewsGroup << endl;
             }else if(answerCode == int(Protocol::ANS_NAK)){
                 if(mess.recvCode() == int(Protocol::ERR_NG_ALREADY_EXISTS)){
-                    cout << "New NewsGroup not created. Reason: NewsGroup already exists." << endl;
+                    cout << "New NewsGroup not created." << endl;
+                    cout << "Reason: NewsGroup already exists." << endl;
                 }else{
                     error(-1);
                 }
@@ -186,22 +229,20 @@ void Client::createNewsGroups(MessageHandler mess){ //Done
         }else{
             error(-1);
         }
-    }else{
-        cout << "Command Canceled" << endl;
     }
     
 }
-void Client::deleteNewsGroups(MessageHandler mess){ //Done
+void Client::deleteNewsGroups(MessageHandler mess){ 
 
-    cout << "Enter Id of the NewsGroup you want to delete (Typ \"?c\" to cancel): ";
+    cout << "Enter Id of the NewsGroup you want to delete: ";
     int idOfNewsGroup;
-    cin >> idOfNewsGroup;
+    if(cin >> idOfNewsGroup && cin.peek() == '\n'){
+        cin.ignore();
+    // string temp;
+    // std::getline(cin, temp);
 
-    string temp;
-    std::getline(cin, temp);
-
-    if(!cin.fail()){
-        if(temp == ""){
+    // if(!cin.fail() && temp == ""){
+        if(cancelCommand()){
             mess.sendCode(int(Protocol::COM_DELETE_NG));
             mess.sendIntParameter(idOfNewsGroup);
             mess.sendCode(int(Protocol::COM_END));
@@ -212,7 +253,8 @@ void Client::deleteNewsGroups(MessageHandler mess){ //Done
                     cout << "NewsGroup (" << idOfNewsGroup << ") deleted." << endl;
                 }else if(answerCode == int(Protocol::ANS_NAK)){
                     if(mess.recvCode() == int(Protocol::ERR_NG_DOES_NOT_EXIST)){
-                        cout << "NewsGroup (" << idOfNewsGroup << ") not deleted. Reason: NewsGroup (" << idOfNewsGroup << ") does not exists." << endl;
+                        cout << "NewsGroup (" << idOfNewsGroup << ") not deleted." << endl;
+                        cout << "Reason: NewsGroup (" << idOfNewsGroup << ") does not exists." << endl;
                     }else{
                         error(-1);
                     }
@@ -225,32 +267,25 @@ void Client::deleteNewsGroups(MessageHandler mess){ //Done
             }else{
                 error(-1);
             }
-        }else{
-            error(2);
         }
     }else{
+        error(2);
         cin.clear();
-        string userCommand;
-        std::getline(cin, userCommand);
-        if(userCommand != "?c"){
-            error(2);
-        }else{
-            cout << "Command Canceled" << endl;
-        }
+        cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     }
     
 }
-void Client::listArticle(MessageHandler mess){ //Done
+void Client::listArticle(MessageHandler mess){ 
 
-    cout << "Enter Id of the NewsGroup to get the list of Articles (Typ \"?c\" to cancel): ";
+    cout << "Enter Id of the NewsGroup to get the list of Articles: ";
     int idOfNewsGroupArticle;
-    cin >> idOfNewsGroupArticle;
+    if(cin >> idOfNewsGroupArticle && cin.peek() == '\n'){
+        cin.ignore();
+    // string temp;
+    // std::getline(cin, temp);
 
-    string temp;
-    std::getline(cin, temp);
-
-    if(!cin.fail()){
-        if(temp == ""){
+    // if(!cin.fail()){
+        if(cancelCommand()){
             mess.sendCode(int(Protocol::COM_LIST_ART));
             mess.sendIntParameter(idOfNewsGroupArticle);
             mess.sendCode(int(Protocol::COM_END));
@@ -269,7 +304,8 @@ void Client::listArticle(MessageHandler mess){ //Done
                     }
                 }else if(answerCode == int(Protocol::ANS_NAK)){
                     if(mess.recvCode() == int(Protocol::ERR_NG_DOES_NOT_EXIST)){
-                        cout << "Can not show list of Articles. Reason: NewsGroup (" << idOfNewsGroupArticle << ") does not exists." << endl;
+                        cout << "Can not show list of Articles." << endl;
+                        cout << "Reason: NewsGroup (" << idOfNewsGroupArticle << ") does not exists." << endl;
                     }else{
                         error(-1);
                     }
@@ -282,29 +318,215 @@ void Client::listArticle(MessageHandler mess){ //Done
             }else{
                 error(-1);
             }
-        }else{
-            error(2);
         }
     }else{
-        cin.clear();
-        string userCommand;
-        std::getline(cin, userCommand);
-        if(userCommand != "?c"){
-            error(2);
-        }else{
-            cout << "Command Canceled" << endl;
-        }
+        error(2);
+        cin.clear();        
+        cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     }
     
 }
 void Client::createArticle(MessageHandler mess){
 
-}
-void Client::deleteArticle(MessageHandler mess){
+    cout << "Enter Id of NewsGroup where Article should be created: ";
+    int idOfNewsGroup;
+
+    if(cin >> idOfNewsGroup && cin.peek() == '\n'){
+        cin.ignore();
+
+        bool inputCheck = true;
+        string articleName, articleAuthor, articleText;
+
+        while(inputCheck){
+            cout << "Enter Article name: ";
+            getline(cin, articleName);
+            if(articleName == ""){
+                error(4);
+            }else{
+                inputCheck = false;
+            }
+        }
+        inputCheck = true;
+
+        while(inputCheck){
+            cout << "Enter Article author: ";
+            getline(cin, articleAuthor);
+            if(articleAuthor == ""){
+                error(5);
+            }else{
+                inputCheck = false;
+            }
+        }
+        inputCheck = true;
+
+        while(inputCheck){
+            cout << "Enter Article text: ";
+            getline(cin, articleText);                  // Must fix article that has line-breaks
+            if(articleText == ""){
+                error(6);
+            }else{
+                inputCheck = false;
+            }
+        }                  
+
+        if(cancelCommand()){
+
+            mess.sendCode(int(Protocol::COM_CREATE_ART));
+            mess.sendIntParameter(idOfNewsGroup);
+            mess.sendStringParameter(articleName);
+            mess.sendStringParameter(articleAuthor);
+            mess.sendStringParameter(articleText);
+            mess.sendCode(int(Protocol::COM_END));
+
+            if(mess.recvCode() == int(Protocol::ANS_CREATE_ART)){
+                int answerCode = mess.recvCode();
+                if(answerCode == int(Protocol::ANS_ACK)){
+                cout << "New Article created." << endl;
+                cout << "Name: " << articleName << endl;
+                cout << "Author: " << articleAuthor << endl;
+                cout << "Text: " << articleText << endl;
+            }else if(answerCode == int(Protocol::ANS_NAK)){
+                if(mess.recvCode() == int(Protocol::ERR_NG_DOES_NOT_EXIST)){
+                    cout << "New NewsGroup not created." << endl;
+                    cout << "Reason: NewsGroup (" << idOfNewsGroup << ") does not exists." << endl;
+                }else{
+                    error(-1);
+                }
+            }else{
+                error(-1);
+            }
+            if(mess.recvCode() != int(Protocol::ANS_END)){
+                error(-1);
+            }
+            }else{
+                error(-1);
+            }
+        }
+    }else{
+        error(2);
+        cin.clear();        
+        cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    }
 
 }
+void Client::deleteArticle(MessageHandler mess){ 
+
+    cout << "Enter Id of NewsGroup where Article should be deleted: ";
+    int idOfNewsGroup, idOfArticle;
+
+    if(cin >> idOfNewsGroup && cin.peek() == '\n'){
+        cin.ignore();
+
+        cout << "Enter Id of Article that should be deleted: ";
+
+        if(cin >> idOfArticle && cin.peek() == '\n'){
+            cin.ignore();
+
+            if(cancelCommand()){
+                mess.sendCode(int(Protocol::COM_DELETE_ART));
+                mess.sendIntParameter(idOfNewsGroup);
+                mess.sendIntParameter(idOfArticle);
+                mess.sendCode(int(Protocol::COM_END));
+
+                if(mess.recvCode() == int(Protocol::ANS_DELETE_ART)){
+                    int answerCode = mess.recvCode();
+                    if(answerCode == int(Protocol::ANS_ACK)){
+                        cout << "Article (" << idOfArticle << ") deleted." << endl;
+                    }else if(answerCode == int(Protocol::ANS_NAK)){
+                        int answerErrorCode = mess.recvCode();
+                        cout << "Article (" << idOfArticle << ") not deleted." << endl;
+                        if(answerErrorCode == int(Protocol::ERR_NG_DOES_NOT_EXIST)){
+                            cout << "Reason: NewsGroup (" << idOfNewsGroup << ") does not exists." << endl;
+                        }else if(answerErrorCode == int(Protocol::ERR_ART_DOES_NOT_EXIST)){
+                            cout << "Reason: Article (" << idOfArticle << ") does not exists." << endl;
+                        }else{
+                            error(-1);
+                        }
+                    }else{
+                        error(-1);
+                    }
+                    if(mess.recvCode() != int(Protocol::ANS_END)){
+                        error(-1);
+                    }
+                }else{
+                    error(-1);
+                }
+            }
+        }else{
+            error(2);
+            cin.clear();        
+            cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        }
+    }else{
+        error(2);
+        cin.clear();        
+        cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    }
+}
 void Client::showArticle(MessageHandler mess){
-    
+
+    cout << "Enter Id of NewsGroup where Article is: ";
+    int idOfNewsGroup, idOfArticle;
+
+    if(cin >> idOfNewsGroup && cin.peek() == '\n'){
+        cin.ignore();
+
+        cout << "Enter Id of Article that should be shown: ";
+
+        if(cin >> idOfArticle && cin.peek() == '\n'){
+            cin.ignore();
+
+            if(cancelCommand()){
+                mess.sendCode(int(Protocol::COM_GET_ART));
+                mess.sendIntParameter(idOfNewsGroup);
+                mess.sendIntParameter(idOfArticle);
+                mess.sendCode(int(Protocol::COM_END));
+
+                if(mess.recvCode() == int(Protocol::ANS_GET_ART)){
+                    int answerCode = mess.recvCode();
+                    if(answerCode == int(Protocol::ANS_ACK)){
+                        
+                        string articleName, articleAuthor, articleText;
+
+                        articleName = mess.recvStringParameter();
+                        articleAuthor = mess.recvStringParameter();
+                        articleText = mess.recvStringParameter();
+
+                        cout << "Article (" << idOfArticle << "):" << endl;
+                        cout << "Name: " << articleName << endl;
+                        cout << "Author: " << articleAuthor << endl;
+                        cout << "Text: " << articleText << endl;
+
+                    }else if(answerCode == int(Protocol::ANS_NAK)){
+                        int answerErrorCode = mess.recvCode();
+                        cout << "Article (" << idOfArticle << ") not shown." << endl;
+                        if(answerErrorCode == int(Protocol::ERR_NG_DOES_NOT_EXIST)){
+                            cout << "Reason: NewsGroup (" << idOfNewsGroup << ") does not exists." << endl;
+                        }else if(answerErrorCode == int(Protocol::ERR_ART_DOES_NOT_EXIST)){
+                            cout << "Reason: Article (" << idOfArticle << ") does not exists." << endl;
+                        }else{
+                            error(-1);
+                        }
+                    }else{
+                        error(-1);
+                    }
+                    if(mess.recvCode() != int(Protocol::ANS_END)){
+                        error(-1);
+                    }
+                }else{
+                    error(-1);
+                }
+            }
+        }else{
+            error(2);
+            cin.clear();        
+            cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        }
+    }else{
+        error(2);
+        cin.clear();        
+        cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    }
 }
 
 

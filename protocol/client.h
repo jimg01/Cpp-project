@@ -17,6 +17,7 @@ class Client{
     private:
     void showOptions();
     void error(const int);
+    bool cancelCommand();
     void listNewsGroups(MessageHandler);
     void createNewsGroups(MessageHandler);
     void deleteNewsGroups(MessageHandler);
