@@ -144,14 +144,18 @@ void Client::error(int i){
         break;
 
     case 4:
-        cerr << "Invalid Input. Article name can not be empty" << endl;
+        cerr << "Invalid Input. NewsGroup name can not be empty" << endl;
         break;
 
     case 5:
-        cerr << "Invalid Input. Article author can not be empty" << endl;
+        cerr << "Invalid Input. Article name can not be empty" << endl;
         break;
 
     case 6:
+        cerr << "Invalid Input. Article author can not be empty" << endl;
+        break;
+
+    case 7:
         cerr << "Invalid Input. Article text can not be empty" << endl;
         break;
 
@@ -200,9 +204,18 @@ void Client::listNewsGroups(MessageHandler mess){
 }
 void Client::createNewsGroups(MessageHandler mess){ 
 
-    cout << "Enter name of new NewsGroup: ";
+    bool inputCheck = true;
     string nameOfNewsGroup;
-    std::getline(cin, nameOfNewsGroup);
+
+    while(inputCheck){
+        cout << "Enter name of new NewsGroup: ";
+        std::getline(cin, nameOfNewsGroup);
+        if(nameOfNewsGroup == ""){
+            error(4);
+        }else{
+            inputCheck = false;
+        }
+    }
 
     if(cancelCommand()){
         mess.sendCode(int(Protocol::COM_CREATE_NG));
@@ -341,7 +354,7 @@ void Client::createArticle(MessageHandler mess){
             cout << "Enter Article name: ";
             getline(cin, articleName);
             if(articleName == ""){
-                error(4);
+                error(5);
             }else{
                 inputCheck = false;
             }
@@ -352,7 +365,7 @@ void Client::createArticle(MessageHandler mess){
             cout << "Enter Article author: ";
             getline(cin, articleAuthor);
             if(articleAuthor == ""){
-                error(5);
+                error(6);
             }else{
                 inputCheck = false;
             }
@@ -363,7 +376,7 @@ void Client::createArticle(MessageHandler mess){
             cout << "Enter Article text: ";
             getline(cin, articleText);                  // Must fix article that has line-breaks
             if(articleText == ""){
-                error(6);
+                error(7);
             }else{
                 inputCheck = false;
             }
