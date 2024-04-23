@@ -23,14 +23,14 @@ Article::Article(int ind, std::string titl, std::string auth, std::string txt){
 }
 
 const std::string& Article::get_name() const{
-	return name;
+	return title;
 }
 
-const std::string& get_author() const{
+const std::string& Article::get_author() const{
 	return author;
 }
 
-const std::string& get_text() const{
+const std::string& Article::get_text() const{
 	return text;
 }
 

@@ -2,8 +2,8 @@
 #define INMEMORYDATABASE_H
 
 #include "database_interface.h"
-#include "article.h"
 #include "newsgroup.h"
+#include "article.h"
 #include <map>
 
 class InMemoryDatabase : public Database_interface{

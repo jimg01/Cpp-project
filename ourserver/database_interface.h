@@ -2,8 +2,7 @@
 #define DATABASE_INTERFACE_H 
 
 #include <string>
-#include "article.h"
-#include "newsgroup.h"
+#include <vector>
 
 class Database_interface {
 public:

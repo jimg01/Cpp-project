@@ -10,14 +10,12 @@ DEPFLAGS = -MT $@ -MMD -MP -MF $*.d
 # Define preprocessor, compiler, and linker flags. Uncomment the # lines
 # if you use clang++ and wish to use libc++ instead of GNU's libstdc++.
 # -g is for debugging.
-<<<<<<< HEAD
 CPPFLAGS  = -I../include
 CXXFLAGS =  -O2 -Wall -Wextra -pedantic-errors -Wold-style-cast
 CXXFLAGS += -std=c++11
 CXXFLAGS += -g
 CXXFLAGS += $(DEPFLAGS)
 LDFLAGS   = -g -L../lib
-
 #CPPFLAGS += -stdlib=libc++
 #CXXFLAGS += -stdlib=libc++
 #LDFLAGS +=  -stdlib=libc++
@@ -26,20 +24,19 @@ LDFLAGS   = -g -L../lib
 LDLIBS = -lclientserver
 
 # Targets
-PROGS = inmemorydatabase testMain
+PROGS = ourserver inmemorydatabase 
 
 all: $(PROGS)
 
 # Targets rely on implicit rules for compiling and linking
 # The dependency on libclientserver.a is not defined.
-inmemorydatabase: inmemorydatabase.o article.o newsgroup.o 
-testMain: testMain.o newsgroup.o article.o
+ourserver: ourserver.o inmemorydatabase.o newsgroup.o article.o
+inmemorydatabase: inmemorydatabase.o newsgroup.o article.o
 
 SRC = $(wildcard *.cc)
 
 # Phony targets
 .PHONY: all clean distclean
-
 
 # Standard clean
 clean:
@@ -49,6 +46,8 @@ clean:
 distclean: clean
 	-rm $(SRC:.cc=.d)
 	-rm -r $(addsuffix .dSym,$(PROGS)) # for cleaning on Macs
+
+
 
 # Include the *.d files
 -include $(SRC:.cc=.d)

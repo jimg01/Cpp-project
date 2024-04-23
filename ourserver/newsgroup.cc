@@ -2,10 +2,10 @@
 #include "article.h"
 #include <vector>
 
-NewsGroup::NewsGroup(int ind, std::string n){
+NewsGroup::NewsGroup(int& ind, std::string& n){
 	id = ind;
 	name = n;
-	std::map<int, Article> articles;	
+	articles = std::map<int, Article>();	
 	next_free_index = 1;
 }
 
@@ -24,17 +24,17 @@ const std::map<int, Article>& NewsGroup::map_of_articles() const{
 }
 
 bool NewsGroup::create_article(std::string title, std::string author, std::string text){	
-	articles[next_free_index] = Article(next_free_index, title, author, text);
+	articles.insert(std::make_pair(next_free_index, Article(next_free_index, title, author, text)));
 	next_free_index++;
 	return true;
 }
 
-void delete_article(int id){ //throws error if no such article exists
+void NewsGroup::delete_article(int id){ //throws error if no such article exists
 	articles.at(id); //for out of range error
 	articles.erase(id);
 } 
 
-const Article get_article(int id){ //throws error if no such article exists
+const Article NewsGroup::get_article(int id){ //throws error if no such article exists
 	auto article = articles.at(id); //for out of range error
 	return article;
 }

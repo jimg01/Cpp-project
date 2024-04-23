@@ -3,26 +3,26 @@
 #include <algorithm>
 
 InMemoryDatabase::InMemoryDatabase(){
-	news_groups{};
-	next_free_index{0};
+	news_groups = std::map<int, NewsGroup>();
+	next_free_index = 0;
 }
 
 InMemoryDatabase::~InMemoryDatabase() = default;
 
 std::vector<std::pair<int, std::string>> InMemoryDatabase::list_NG(){
 	std::vector<std::pair<int, std::string>> list_of_NG;
-	for (auto it = news_groups.begin(); it != news_groups.end(): ++it){
-		list_of_NG.pushback(std::make_pair((*it), (*it).value().get_name()) );
+	for (auto it = news_groups.begin(); it != news_groups.end(); ++it){
+		list_of_NG.push_back(std::make_pair((*it).first, (*it).second.get_name()) );
 	}
 	return list_of_NG;
 }
 
 bool InMemoryDatabase::create_NG(std::string name){
-	auto it = std::find_if(news_groups.begin(), news_groups.end(), [&name](const auto& pair){return name == pair.second.name});
+	auto it = std::find_if(news_groups.begin(), news_groups.end(), [&name](const std::pair<int, NewsGroup>& pair){return name == pair.second.get_name();});
 	if (it != news_groups.end()){
 		return false;
 	} else{
-		news_groups[next_free_index] = NewsGroup(next_free_index, name);
+		news_groups.insert(std::make_pair(next_free_index, NewsGroup(next_free_index, name)));
 		++next_free_index;
 		return true;
 	}
@@ -46,9 +46,9 @@ std::vector<std::pair<int, std::string>> InMemoryDatabase::list_articles(int id_
 	std::vector<std::pair<int, std::string>> list_of_articles{};
 	try{
 		auto NG = news_groups.at(id_NG);
-		std::map<int, std::pair<int, std::string>> map_of_articles = NG.map_of_articles();
-		for (auto it = map_of_articles.begin(); it != map_of_articles.end(): ++it){
-			list_of_articles.pushback(std::make_pair((*it), (*it).value().get_name()) );
+		std::map<int, Article> map_of_articles = NG.map_of_articles();
+		for (auto it = map_of_articles.begin(); it != map_of_articles.end(); ++it){
+			list_of_articles.push_back(std::make_pair((*it).first, (*it).second.get_name()) );
 		}
 	}
 	catch(const std::out_of_range& e){
@@ -95,7 +95,8 @@ std::vector<std::string> InMemoryDatabase::get_article(int id_NG, int id_article
 		auto NG = news_groups.at(id_NG);
 		try{
 			Article art = NG.get_article(id_article);
-			return std::vector<std::string> article{art.get_name(), art.get_author(), art.get_text()}
+			std::vector<std::string> article{art.get_name(), art.get_author(), art.get_text()};
+			return article;
 		}
 		catch(const std::out_of_range& e){ //catch error thrown by get_article in NewsGroup
 			//artcie does not exist

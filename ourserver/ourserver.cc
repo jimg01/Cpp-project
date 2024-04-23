@@ -3,7 +3,8 @@
 #include "connectionclosedexception.h"
 #include "server.h"
 #include "database_interface.h"
-#include "../include/protocol.h"
+#include "inmemorydatabase.h"
+#include "protocol.h"
 
 #include <cstdlib>
 #include <iostream>
@@ -34,9 +35,9 @@ int readNumber(const std::shared_ptr<Connection>& conn)
 std::string readString(const std::shared_ptr<Connection>& conn)
 {
 	std::string s{};
-	char c = conn->read()
+	char c = conn->read();
     while (c != '$') {
-    	s.pushback(c);
+    	s.push_back(c);
         char c = conn->read();
     }
     return s;
@@ -91,8 +92,7 @@ Server init(int argc, char* argv[])
         return server;
 }
 
-void process_request(std::shared_ptr<Connection>& conn)
-{
+void process_request(std::shared_ptr<Connection>& conn, Database_interface& database){
     /*
     int    nbr = readNumber(conn);
     string result;
@@ -109,89 +109,89 @@ void process_request(std::shared_ptr<Connection>& conn)
 	int nbr = readNumber(conn);
 	// switch case för vilket command det är
 	switch(nbr){
-	case COM_LIST_NG:
+	case int(Protocol::COM_LIST_NG):
 		/*
 		COM_LIST_NG COM_END
 		ANS_LIST_NG num_p [num_p string_p]* ANS_END
 		*/
-		if (readNumber(conn) == COM_END){
-			list_of_newsgroups = database.list_NG();
-			writeNumber(conn, ANS_LIST_NG);
+		if (readNumber(conn) == int(Protocol::COM_END)){
+			auto list_of_newsgroups = database.list_NG();
+			writeNumber(conn, int(Protocol::ANS_LIST_NG));
 			writeNumber(conn, list_of_newsgroups.size());
 			for(auto it = list_of_newsgroups.begin(); it != list_of_newsgroups.end(); ++it){
 				writeNumber(conn, (*it).first);
 				writeString(conn, (*it).second);
 			}
-			writeNumber(conn, ANS_END);
+			writeNumber(conn, int(Protocol::ANS_END));
 		} else{
 			//throw some error
 		}
 		break;
 
-	case COM_CREATE_NG:
+	case int(Protocol::COM_CREATE_NG):{
 		/*
 		COM_CREATE_NG string_p COM_END
 		ANS_CREATE_NG [ANS_ACK | ANS_NAK ERR_NG_ALREADY_EXISTS] ANS_END
 		*/
 		bool success = database.create_NG(readString(conn));
-		if (readNumber(conn) != COM_END){
+		if (readNumber(conn) != int(Protocol::COM_END)){
 			//Throw error;
 		}
-		writeNumber(conn, ANS_CREATE_NG);
+		writeNumber(conn, int(Protocol::ANS_CREATE_NG));
 		if(success == true){
-			writeNumber(conn, ANS_ACK);
+			writeNumber(conn, int(Protocol::ANS_ACK));
 		} else{
-			writeNumber(conn, ANS_NAK);
-			writeNumber(conn, ERR_NG_ALREADY_EXISTS);
+			writeNumber(conn, int(Protocol::ANS_NAK));
+			writeNumber(conn, int(Protocol::ERR_NG_ALREADY_EXISTS));
 		}
-		writeNumber(conn, ANS_END);
+		writeNumber(conn, int(Protocol::ANS_END));
 		break;
-
-    case COM_DELETE_NG:
+	}
+    case int(Protocol::COM_DELETE_NG):{
     	/*
 		COM_DELETE_NG num_p COM_END
 		ANS_DELETE_NG [ANS_ACK | ANS_NAK ERR_NG_DOES_NOT_EXIST] ANS_END
     	*/ 
     	int id = readNumber(conn);
-    	if (readNumber(conn) != COM_END){
+    	if (readNumber(conn) != int(Protocol::COM_END)){
     		//Throw error
     	}
     	bool success = database.delete_NG(id);
     	if(success == true){
-    		writeNumber(conn, ANS_ACK);
+    		writeNumber(conn, int(Protocol::ANS_ACK));
     	} else{
-    		writeNumber(conn, ANS_NAK);
-    		writeNumber(conn, ERR_NG_DOES_NOT_EXIST);
+    		writeNumber(conn, int(Protocol::ANS_NAK));
+    		writeNumber(conn, int(Protocol::ERR_NG_DOES_NOT_EXIST));
     	}
-    	writeNumber(conn, ANS_END);
+    	writeNumber(conn, int(Protocol::ANS_END));
     	break;
-
-    case COM_LIST_ART:
+    }
+    case int(Protocol::COM_LIST_ART):{
     	/*
 		COM_LIST_ART num_p COM_END
 		ANS_LIST_ART [ANS_ACK num_p [num_p string_p]* | ANS_NAK ERR_NG_DOES_NOT_EXIST] ANS_END
     	*/
     	int id = readNumber(conn);
-    	if (readNumber(conn) != COM_END){
+    	if (readNumber(conn) != int(Protocol::COM_END)){
     		//Throw error
     	} 
-    	writeNumber(conn, ANS_LIST_ART);
+    	writeNumber(conn, int(Protocol::ANS_LIST_ART));
     	try{
-    		auto list_of_articles = database.list_aricles(id);
-    		writeNumber(conn, ANS_ACK);
+    		auto list_of_articles = database.list_articles(id);
+    		writeNumber(conn, int(Protocol::ANS_ACK));
     		writeNumber(conn, list_of_articles.size());
 			for(auto it = list_of_articles.begin(); it != list_of_articles.end(); ++it){
 				writeNumber(conn, (*it).first);
 				writeString(conn, (*it).second);
 			}
     	} catch(const std::runtime_error& e){
-    		writeNumber(conn, ANS_NAK);
-    		writeNumber(conn, ERR_NG_DOES_NOT_EXIST);
+    		writeNumber(conn, int(Protocol::ANS_NAK));
+    		writeNumber(conn, int(Protocol::ERR_NG_DOES_NOT_EXIST));
     	}
-    	writeNumber(conn, ANS_END);
+    	writeNumber(conn, int(Protocol::ANS_END));
     	break;
-
-    case COM_CREATE_ART:
+    }
+    case int(Protocol::COM_CREATE_ART):{
     	/*
 		COM_CREATE_ART num_p string_p string_p string_p COM_END
 		ANS_CREATE_ART [ANS_ACK | ANS_NAK ERR_NG_DOES_NOT_EXIST] ANS_END
@@ -200,107 +200,108 @@ void process_request(std::shared_ptr<Connection>& conn)
     	std::string title = readString(conn);
     	std::string author = readString(conn);
     	std::string text = readString(conn);
-    	if (readNumber(conn) != COM_END){
+    	if (readNumber(conn) != int(Protocol::COM_END)){
     		//throw error
     	}
     	bool success = database.create_article(id_NG, title, author, text);
-    	writeNumber(conn, ANS_CREATE_ART);
+    	writeNumber(conn, int(Protocol::ANS_CREATE_ART));
     	if (success == true){
-    		writeNumber(conn, ANS_ACK);
+    		writeNumber(conn, int(Protocol::ANS_ACK));
     	} else{
-    		writeNumber(conn, ANS_NAK);
-    		writeNumber(conn, ERR_NG_DOES_NOT_EXIST);
+    		writeNumber(conn, int(Protocol::ANS_NAK));
+    		writeNumber(conn, int(Protocol::ERR_NG_DOES_NOT_EXIST));
     	}
-    	writeNumber(conn, ANS_END);
+    	writeNumber(conn, int(Protocol::ANS_END));
     	break;
-
-    case COM_DELETE_ART:
+    }
+    case int(Protocol::COM_DELETE_ART):{
     	/*
 		COM_DELETE_ART num_p num_p COM_END
 		ANS_DELETE_ART [ANS_ACK | ANS_NAK [ERR_NG_DOES_NOT_EXIST | ERR_ART_DOES_NOT_EXIST]] ANS_END
     	*/
     	int id_NG = readNumber(conn);
     	int id_art = readNumber(conn);
-    	if (readNumber(conn) == COM_END){
+    	if (readNumber(conn) == int(Protocol::COM_END)){
     		//throw error
     	}
-    	writeNumber(conn, ANS_DELETE_ART);
+    	writeNumber(conn, int(Protocol::ANS_DELETE_ART));
     	try{
     		database.delete_article(id_NG, id_art);
-    		writeNumber(conn, ANS_ACK);
+    		writeNumber(conn, int(Protocol::ANS_ACK));
 
     	} catch(std::runtime_error& e){
-    		writeNumber(conn, ANS_NAK);
-    		if (e.what == "no such NG"){
-    			writeNumber(conn, ERR_NG_DOES_NOT_EXIST);
+    		writeNumber(conn, int(Protocol::ANS_NAK));
+    		if (e.what() == "no such NG"){
+    			writeNumber(conn, int(Protocol::ERR_NG_DOES_NOT_EXIST));
     		} else{
-    			writeNumber(conn, ERR_ART_DOES_NOT_EXIXT);
+    			writeNumber(conn, int(Protocol::ERR_ART_DOES_NOT_EXIST));
     		}
     	}
-    	writeNumber(conn, ANS_END);
+    	writeNumber(conn, int(Protocol::ANS_END));
     	break;
-
-    case COM_GET_ART:
+    }
+    case int(Protocol::COM_GET_ART):{
     	/*
 		COM_GET_ART num_p num_p COM_END
 		ANS_GET_ART [ANS_ACK string_p string_p string_p | ANS_NAK [ERR_NG_DOES_NOT_EXIST | ERR_ART_DOES_NOT_EXIST]] ANS_END
     	*/
     	int id_NG = readNumber(conn);
     	int id_art = readNumber(conn);
-    	if (readNumber(conn) == COM_END){
+    	if (readNumber(conn) == int(Protocol::COM_END)){
     		//throw error
     	}
-    	writeNumber(conn, ANS_GET_ART);
+    	writeNumber(conn, int(Protocol::ANS_GET_ART));
     	try{
-    		std::std::vector<string> article = database.get_article(id_NG, id_art);
-    		writeNumber(conn, ANS_ACK);
+    		std::vector<std::string> article = database.get_article(id_NG, id_art);
+    		writeNumber(conn, int(Protocol::ANS_ACK));
     		for(auto it = article.begin(); it != article.end(); ++it){
     			writeString(conn, (*it));
     		} 
 
     	} catch(std::runtime_error& e){
-    		writeNumber(conn, ANS_NAK);
-    		if (e.what == "no such NG"){
-    			writeNumber(conn, ERR_NG_DOES_NOT_EXIST);
+    		writeNumber(conn, int(Protocol::ANS_NAK));
+    		if (e.what() == "no such NG"){
+    			writeNumber(conn, int(Protocol::ERR_NG_DOES_NOT_EXIST));
     		} else{
-    			writeNumber(conn, ERR_ART_DOES_NOT_EXIXT);
+    			writeNumber(conn, int(Protocol::ERR_ART_DOES_NOT_EXIST));
     		}
     	}
-    	writeNumber(conn, ANS_END);
+    	writeNumber(conn, int(Protocol::ANS_END));
     	break;
-
-    case COM_END:
+    }
+    case int(Protocol::COM_END):{
     	//throw some error
+    	break;
+    }
 	}
 }
 
-void serve_one(Server& server)
-{
-        auto conn = server.waitForActivity();
-        if (conn != nullptr) {
-                try {
-                    process_request(conn);
-                } catch (ConnectionClosedException&) {
-                        server.deregisterConnection(conn);
-                        cout << "Client closed connection" << endl;
-                }
-        } else {
-                conn = std::make_shared<Connection>();
-                server.registerConnection(conn);
-                cout << "New client connects" << endl;
+void serve_one(Server& server, Database_interface& database) {
+    auto conn = server.waitForActivity();
+    if (conn != nullptr) {
+        try {
+            process_request(conn, database);
+        } catch (ConnectionClosedException&) {
+            server.deregisterConnection(conn);
+            cout << "Client closed connection" << endl;
         }
+    } else {
+        conn = std::make_shared<Connection>();
+        server.registerConnection(conn);
+        cout << "New client connects" << endl;
+    }
 }
 
-int main(int argc, char* argv[])
-{
 
+
+int main(int argc, char* argv[]){
 	//create empty database type 1
-	InMemoryDataBase database{};
+	InMemoryDatabase database{};
 
     auto server = init(argc, argv);
 
     while (true) {
-        serve_one(server);
+        serve_one(server, database);
     }
     return 0;
 }

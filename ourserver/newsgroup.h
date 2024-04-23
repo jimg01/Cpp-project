@@ -1,19 +1,19 @@
 #ifndef NEWSGROUP_H
-#define NEWsGROUP_H
+#define NEWSGROUP_H
 
-#include <map> //??
 #include <string>
 #include <vector>
 #include "article.h"
+#include <map>
 
 class NewsGroup{
 public:
-	NewsGroup();
+	NewsGroup(int& ind, std::string& n);
 	~NewsGroup();
 
 	int get_id() const;
 	const std::string& get_name() const;
-	const std::map<Article>& map_of_articles() const;
+	const std::map<int,Article>& map_of_articles() const;
 	bool create_article(std::string name, std::string author, std::string text); //generate id
 	void delete_article(int id); //throws error if no such article exists
 	const Article get_article(int id); //throws error if no such article exists
