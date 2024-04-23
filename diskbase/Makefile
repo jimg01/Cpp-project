@@ -27,7 +27,7 @@ LDFLAGS   = -g -L../lib
 LDLIBS = -lclientserver
 
 # Targets
-PROGS = test
+PROGS = test diskdatabase
 
 all: $(PROGS)
 

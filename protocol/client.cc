@@ -4,6 +4,7 @@
 #include<limits>
 
 #include"client.h"
+#include"connection.h"
 
 using std::string;
 using std::cin;
@@ -41,7 +42,7 @@ MessageHandler Client::init(const int argc, char* argv[]){
 
 int Client::getPort(){return port;}
 
-int Client::application(MessageHandler mess){
+int Client::application(MessageHandler& mess){
 	cout << "APPL: Mess connected? " << mess.isConnected() << endl;
     int userInput = -1;
     bool InputCheck = true;
@@ -544,5 +545,5 @@ int main(int argc, char* argv[]){
     MessageHandler mess = userClient.init(argc,argv);
     //cout << "MAIN: Mess connected? " << int(mess.isConnected()) << endl;
 
-    return userClient.application(move(mess));
+    return userClient.application(mess);
 }

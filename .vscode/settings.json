@@ -4,7 +4,8 @@
         "iostream": "cpp",
         "*.tcc": "cpp",
         "limits": "cpp",
-        "ostream": "cpp"
+        "ostream": "cpp",
+        "algorithm": "cpp"
     },
     "cmake.configureOnOpen": false
 }
