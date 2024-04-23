@@ -1,5 +1,6 @@
 #include "connection.h"	//remove here?
 #include "connectionclosedexception.h"
+#include "protocolviolationexception.h"
 #include "protocol.h"
 #include "messagehandler.h"
 
@@ -49,9 +50,10 @@ int MessageHandler::recvIntParameter(){
 	int code = recvCode();
 	if (code != int(Protocol::PAR_NUM)) {
 //		throw ProtocolViolationException("Receive numeric parameter",
-//				Protocol.PAR_NUM, code);
-		ConnectionClosedException e;
-		throw (e);	//fix correct violation??
+//				Protocol::PAR_NUM, code);
+//		ConnectionClosedException e;
+		ProtocolViolationException e;
+		throw (e);
 	}
 	return recvInt();
 }
@@ -61,10 +63,10 @@ std::string MessageHandler::recvStringParameter(){
 	int code = recvCode();
 	if (code != int(Protocol::PAR_STRING)) {
 //		throw ProtocolViolationException("Receive string parameter",
-//				Protocol.PAR_STRING, code);
+//				Protocol::PAR_STRING, code);
 
-		//create struct for ProtocolViolationException as well??
-		ConnectionClosedException e;
+//		ConnectionClosedException e;
+		ProtocolViolationException e;
 		throw (e);	//fix correct violation??
 	}
 	int n = recvInt();
@@ -72,7 +74,8 @@ std::string MessageHandler::recvStringParameter(){
 
 	//	throw ProtocolViolationException("Receive string parameter",
 	//			"Number of characters < 0");
-		ConnectionClosedException e;
+	//	ConnectionClosedException e;
+		ProtocolViolationException e;
 		throw (e);
 	}
 	
@@ -91,13 +94,16 @@ std::string MessageHandler::recvStringParameter(){
 
 int MessageHandler::recvByte(){
 	int code = conn.read();
-	if (conn.isConnected()){//if (code == ::CONNECTION_CLOSED) {
+	if (!conn.isConnected()){//if (code == ::CONNECTION_CLOSED) {
 		ConnectionClosedException e;
 		throw (e);	
 	}
 	return code;
 }
 
+bool MessageHandler::isConnected(){
+	return conn.isConnected();
+}
 	
 int MessageHandler::recvCode(){
 	int code = recvByte();

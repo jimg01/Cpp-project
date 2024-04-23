@@ -42,6 +42,7 @@ MessageHandler Client::init(const int argc, char* argv[]){
 int Client::getPort(){return port;}
 
 int Client::application(MessageHandler mess){
+	cout << "APPL: Mess connected? " << int(mess.isConnected()) << endl;
     int userInput = -1;
     bool InputCheck = true;
 
@@ -170,10 +171,12 @@ bool Client::cancelCommand(){
     getline(cin, userInput);
     std::transform(userInput.begin(), userInput.end(),userInput.begin(),[](unsigned char c) {return std::tolower(c);});
     if(userInput == "y"){
-        return true;
+        //return true;
+        return false;
     }else if(userInput == "n"){
         cout << "Command Canceled" << endl;
-        return false;
+        //return false;
+        return true;
     }else {
         error(3);
         return cancelCommand();
@@ -203,7 +206,6 @@ void Client::listNewsGroups(MessageHandler mess){
     
 }
 void Client::createNewsGroups(MessageHandler mess){ 
-
     bool inputCheck = true;
     string nameOfNewsGroup;
 
@@ -217,12 +219,15 @@ void Client::createNewsGroups(MessageHandler mess){
         }
     }
 
-    if(cancelCommand()){
+    if(!cancelCommand()){	// added "!" for the naming and output to make more sense
+		
         mess.sendCode(int(Protocol::COM_CREATE_NG));
         mess.sendStringParameter(nameOfNewsGroup);
         mess.sendCode(int(Protocol::COM_END));
 
-        if(mess.recvCode() == int(Protocol::ANS_CREATE_NG)){
+		//can throw ClosedConnectionException!
+        if(mess.recvCode() == int(Protocol::ANS_CREATE_NG)){	
+        	cout << "server created nresgrupp" << endl;
             int answerCode = mess.recvCode();
             if(answerCode == int(Protocol::ANS_ACK)){
                 cout << "New NewsGroup created. Name: " << nameOfNewsGroup << endl;
@@ -255,7 +260,7 @@ void Client::deleteNewsGroups(MessageHandler mess){
     // std::getline(cin, temp);
 
     // if(!cin.fail() && temp == ""){
-        if(cancelCommand()){
+        if(!cancelCommand()){
             mess.sendCode(int(Protocol::COM_DELETE_NG));
             mess.sendIntParameter(idOfNewsGroup);
             mess.sendCode(int(Protocol::COM_END));
@@ -298,7 +303,7 @@ void Client::listArticle(MessageHandler mess){
     // std::getline(cin, temp);
 
     // if(!cin.fail()){
-        if(cancelCommand()){
+        if(!cancelCommand()){
             mess.sendCode(int(Protocol::COM_LIST_ART));
             mess.sendIntParameter(idOfNewsGroupArticle);
             mess.sendCode(int(Protocol::COM_END));
@@ -382,7 +387,7 @@ void Client::createArticle(MessageHandler mess){
             }
         }                  
 
-        if(cancelCommand()){
+        if(!cancelCommand()){
 
             mess.sendCode(int(Protocol::COM_CREATE_ART));
             mess.sendIntParameter(idOfNewsGroup);
@@ -435,7 +440,7 @@ void Client::deleteArticle(MessageHandler mess){
         if(cin >> idOfArticle && cin.peek() == '\n'){
             cin.ignore();
 
-            if(cancelCommand()){
+            if(!cancelCommand()){
                 mess.sendCode(int(Protocol::COM_DELETE_ART));
                 mess.sendIntParameter(idOfNewsGroup);
                 mess.sendIntParameter(idOfArticle);
@@ -489,7 +494,7 @@ void Client::showArticle(MessageHandler mess){
         if(cin >> idOfArticle && cin.peek() == '\n'){
             cin.ignore();
 
-            if(cancelCommand()){
+            if(!cancelCommand()){
                 mess.sendCode(int(Protocol::COM_GET_ART));
                 mess.sendIntParameter(idOfNewsGroup);
                 mess.sendIntParameter(idOfArticle);
@@ -549,6 +554,7 @@ int main(int argc, char* argv[]){
     // cin >> port;
     Client userClient;
     MessageHandler mess = userClient.init(argc,argv);
+    //cout << "MAIN: Mess connected? " << int(mess.isConnected()) << endl;
 
     return userClient.application(move(mess));
 }

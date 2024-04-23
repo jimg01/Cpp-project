@@ -30,7 +30,8 @@ class MessageHandler {
 		int recvByte();
 
 	public:
-	
+
+	bool isConnected();
 	/**
 	 * Create a message handler.
 	 * 
