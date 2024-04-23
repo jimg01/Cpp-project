@@ -13,7 +13,7 @@ DEPFLAGS = -MT $@ -MMD -MP -MF $*.d
 
 CPPFLAGS  = -I../include
 CXXFLAGS =  -O2 -Wall -Wextra -pedantic-errors -Wold-style-cast
-CXXFLAGS += -std=c++11
+CXXFLAGS += -std=c++17
 CXXFLAGS += -g
 CXXFLAGS += $(DEPFLAGS)
 LDFLAGS   = -g -L../lib
@@ -27,7 +27,7 @@ LDFLAGS   = -g -L../lib
 LDLIBS = -lclientserver
 
 # Targets
-PROGS = diskdatabase 
+PROGS = test
 
 all: $(PROGS)
 
@@ -35,6 +35,7 @@ all: $(PROGS)
 # The dependency on libclientserver.a is not defined.
 
 diskdatabase: diskdatabase.o
+test: test.o
 
 SRC = $(wildcard *.cc)
 
