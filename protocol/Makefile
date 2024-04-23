@@ -24,7 +24,7 @@ LDFLAGS   = -g -L../lib
 
 # Libraries
 
-#LDLIBS = -lclientserver
+LDLIBS = -lclientserver
 
 # Targets
 PROGS = client testHandler
@@ -34,8 +34,8 @@ all: $(PROGS)
 # Targets rely on implicit rules for compiling and linking
 # The dependency on libclientserver.a is not defined.
 
-client: client.o messagehandler.o connection.o
-testHandler: testHandler.o messagehandler.o connection.o
+client: client.o messagehandler.o 
+testHandler: testHandler.o messagehandler.o 
 
 SRC = $(wildcard *.cc)
 

@@ -24,6 +24,7 @@ LDFLAGS =   -g -Llib
 
 all: lib/libclientserver.a
 	make -C example
+	make -C protocol
 
 # Create the library; ranlib is for Darwin (OS X) and maybe other systems.
 # Doesn't seem to do any damage on other systems.
@@ -31,7 +32,7 @@ all: lib/libclientserver.a
 lib/libclientserver.a: src/connection.o src/server.o
 	mkdir -p lib
 	ar rv lib/libclientserver.a  src/connection.o src/server.o
-	ranlib lib/libclientserver.a
+#	ranlib lib/libclientserver.a
 
 # Phony targets
 .PHONY: all clean distclean
@@ -47,6 +48,7 @@ distclean: clean
 	-rmdir lib
 	-rm $(SRC:.cc=.d) 
 	make -C example distclean
+	make -C protocol distclean
 
 
 # Include the *.d files
