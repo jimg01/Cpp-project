@@ -18,6 +18,7 @@ std::vector<std::pair<int, std::string>> InMemoryDatabase::list_NG(){
 }
 
 bool InMemoryDatabase::create_NG(std::string name){
+	//Since you're using a map to store news groups, you can directly check if the name exists with news_groups.find(name) != news_groups.end(). This approach has a logarithmic complexity,
 	auto it = std::find_if(news_groups.begin(), news_groups.end(), [&name](const std::pair<int, NewsGroup>& pair){return name == pair.second.get_name();});
 	if (it != news_groups.end()){
 		return false;
@@ -47,6 +48,7 @@ std::vector<std::pair<int, std::string>> InMemoryDatabase::list_articles(int id_
 	try{
 		auto NG = news_groups.at(id_NG);
 		std::map<int, Article> map_of_articles = NG.map_of_articles();
+		//for (const auto& [id, ng] : news_groups)
 		for (auto it = map_of_articles.begin(); it != map_of_articles.end(); ++it){
 			list_of_articles.push_back(std::make_pair((*it).first, (*it).second.get_name()) );
 		}

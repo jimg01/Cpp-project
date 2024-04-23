@@ -30,7 +30,7 @@ all: $(PROGS)
 
 # Targets rely on implicit rules for compiling and linking
 # The dependency on libclientserver.a is not defined.
-myserver: omyserver.o 
+myserver: myserver.o 
 myclient: myclient.o
 
 SRC = $(wildcard *.cc)
