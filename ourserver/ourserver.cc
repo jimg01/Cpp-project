@@ -166,21 +166,112 @@ void process_request(std::shared_ptr<Connection>& conn)
     	writeNumber(conn, ANS_END);
     	break;
 
-
-
     case COM_LIST_ART:
+    	/*
+		COM_LIST_ART num_p COM_END
+		ANS_LIST_ART [ANS_ACK num_p [num_p string_p]* | ANS_NAK ERR_NG_DOES_NOT_EXIST] ANS_END
+    	*/
+    	int id = readNumber(conn);
+    	if (readNumber(conn) != COM_END){
+    		//Throw error
+    	} 
+    	writeNumber(conn, ANS_LIST_ART);
+    	try{
+    		auto list_of_articles = database.list_aricles(id);
+    		writeNumber(conn, ANS_ACK);
+    		writeNumber(conn, list_of_articles.size());
+			for(auto it = list_of_articles.begin(); it != list_of_articles.end(); ++it){
+				writeNumber(conn, (*it).first);
+				writeString(conn, (*it).second);
+			}
+    	} catch(const std::runtime_error& e){
+    		writeNumber(conn, ANS_NAK);
+    		writeNumber(conn, ERR_NG_DOES_NOT_EXIST);
+    	}
+    	writeNumber(conn, ANS_END);
+    	break;
+
     case COM_CREATE_ART:
+    	/*
+		COM_CREATE_ART num_p string_p string_p string_p COM_END
+		ANS_CREATE_ART [ANS_ACK | ANS_NAK ERR_NG_DOES_NOT_EXIST] ANS_END
+    	*/
+    	int id_NG = readNumber(conn);
+    	std::string title = readString(conn);
+    	std::string author = readString(conn);
+    	std::string text = readString(conn);
+    	if (readNumber(conn) != COM_END){
+    		//throw error
+    	}
+    	bool success = database.create_article(id_NG, title, author, text);
+    	writeNumber(conn, ANS_CREATE_ART);
+    	if (success == true){
+    		writeNumber(conn, ANS_ACK);
+    	} else{
+    		writeNumber(conn, ANS_NAK);
+    		writeNumber(conn, ERR_NG_DOES_NOT_EXIST);
+    	}
+    	writeNumber(conn, ANS_END);
+    	break;
+
     case COM_DELETE_ART:
+    	/*
+		COM_DELETE_ART num_p num_p COM_END
+		ANS_DELETE_ART [ANS_ACK | ANS_NAK [ERR_NG_DOES_NOT_EXIST | ERR_ART_DOES_NOT_EXIST]] ANS_END
+    	*/
+    	int id_NG = readNumber(conn);
+    	int id_art = readNumber(conn);
+    	if (readNumber(conn) == COM_END){
+    		//throw error
+    	}
+    	writeNumber(conn, ANS_DELETE_ART);
+    	try{
+    		database.delete_article(id_NG, id_art);
+    		writeNumber(conn, ANS_ACK);
+
+    	} catch(std::runtime_error& e){
+    		writeNumber(conn, ANS_NAK);
+    		if (e.what == "no such NG"){
+    			writeNumber(conn, ERR_NG_DOES_NOT_EXIST);
+    		} else{
+    			writeNumber(conn, ERR_ART_DOES_NOT_EXIXT);
+    		}
+    	}
+    	writeNumber(conn, ANS_END);
+    	break;
+
     case COM_GET_ART:
+    	/*
+		COM_GET_ART num_p num_p COM_END
+		ANS_GET_ART [ANS_ACK string_p string_p string_p | ANS_NAK [ERR_NG_DOES_NOT_EXIST | ERR_ART_DOES_NOT_EXIST]] ANS_END
+    	*/
+    	int id_NG = readNumber(conn);
+    	int id_art = readNumber(conn);
+    	if (readNumber(conn) == COM_END){
+    		//throw error
+    	}
+    	writeNumber(conn, ANS_GET_ART);
+    	try{
+    		std::std::vector<string> article = database.get_article(id_NG, id_art);
+    		writeNumber(conn, ANS_ACK);
+    		for(auto it = article.begin(); it != article.end(); ++it){
+    			writeString(conn, (*it));
+    		} 
+
+    	} catch(std::runtime_error& e){
+    		writeNumber(conn, ANS_NAK);
+    		if (e.what == "no such NG"){
+    			writeNumber(conn, ERR_NG_DOES_NOT_EXIST);
+    		} else{
+    			writeNumber(conn, ERR_ART_DOES_NOT_EXIXT);
+    		}
+    	}
+    	writeNumber(conn, ANS_END);
+    	break;
+
     case COM_END:
+    	//throw some error
 	}
-	if (nbr == 1) {
-		//result = database_interface"." getlist
-	}
-	
-
-    //writeString(conn, result);
-
 }
 
 void serve_one(Server& server)

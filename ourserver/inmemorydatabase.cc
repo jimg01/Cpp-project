@@ -43,7 +43,6 @@ bool InMemoryDatabase::delete_NG(int id_NG){
 }
 
 std::vector<std::pair<int, std::string>> InMemoryDatabase::list_articles(int id_NG){
-	//add errorhandling
 	std::vector<std::pair<int, std::string>> list_of_articles{};
 	try{
 		auto NG = news_groups.at(id_NG);
@@ -81,11 +80,13 @@ void InMemoryDatabase::delete_article(int id_NG, int id_article){
 		catch(const std::out_of_range& e){ //catch error thrown by delete_article in NewsGroup
 			//artcie does not exist
 			std::cout << "no such article" << std::endl;
+			throw std::runtime_error("no such article");
 		}
 	}
 	catch(const std::out_of_range& e){
 		//News group does not exist
 		std::cout << "no such news group" << std::endl;
+		throw std::runtime_error("no such NG");
 	}
 }
 
@@ -99,11 +100,13 @@ std::vector<std::string> InMemoryDatabase::get_article(int id_NG, int id_article
 		catch(const std::out_of_range& e){ //catch error thrown by get_article in NewsGroup
 			//artcie does not exist
 			std::cout << "no such article" << std::endl;
+			throw std::runtime_error("no such article");
 		}
 	}
 	catch(const std::out_of_range& e){
 		//News group does not exist
 		std::cout << "no such news group" << std::endl;
+		throw std::runtime_error("no such NG");
 	}
 }
 
