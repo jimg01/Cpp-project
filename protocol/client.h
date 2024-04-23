@@ -18,13 +18,13 @@ class Client{
     void showOptions();
     void error(const int);
     bool cancelCommand();
-    void listNewsGroups(MessageHandler);
-    void createNewsGroups(MessageHandler);
-    void deleteNewsGroups(MessageHandler);
-    void listArticle(MessageHandler);
-    void createArticle(MessageHandler);
-    void deleteArticle(MessageHandler);
-    void showArticle(MessageHandler);
+    void listNewsGroups(MessageHandler&);
+    void createNewsGroups(MessageHandler&);
+    void deleteNewsGroups(MessageHandler&);
+    void listArticle(MessageHandler&);
+    void createArticle(MessageHandler&);
+    void deleteArticle(MessageHandler&);
+    void showArticle(MessageHandler&);
     int port;
 
 

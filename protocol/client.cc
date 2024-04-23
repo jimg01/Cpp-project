@@ -42,55 +42,44 @@ MessageHandler Client::init(const int argc, char* argv[]){
 int Client::getPort(){return port;}
 
 int Client::application(MessageHandler mess){
-	cout << "APPL: Mess connected? " << int(mess.isConnected()) << endl;
+	cout << "APPL: Mess connected? " << mess.isConnected() << endl;
     int userInput = -1;
     bool InputCheck = true;
 
     while (InputCheck) {
         showOptions();
 
-        //cin.ignore(100,'\n');
         if(cin >> userInput && cin.peek() == '\n'){
             cin.ignore();
-
-        // string temp;
-        // std::getline(cin, temp);
-        // cin.ignore(100,'\n');
-
-        // if(cin.fail() || temp != ""){
-        //     error(1);
-        //     cin.clear();
-        //     cin.ignore(100,'\n');   // vet inte varför jag måste "cleara" den igen???
-        // }else{
             
             switch (userInput) 
             {
                 case 1:
-                    listNewsGroups(move(mess));
+                    listNewsGroups(mess);
                     break;
                 
                 case 2:
-                    createNewsGroups(move(mess));
+                    createNewsGroups(mess);
                     break;
                 
                 case 3:
-                    deleteNewsGroups(move(mess));
+                    deleteNewsGroups(mess);
                     break;
                 
                 case 4:
-                    listArticle(move(mess));
+                    listArticle(mess);
                     break;
                 
                 case 5:
-                    createArticle(move(mess));
+                    createArticle(mess);
                     break;
                 
                 case 6:
-                    deleteArticle(move(mess));
+                    deleteArticle(mess);
                     break;
                 
                 case 7:
-                    showArticle(move(mess));
+                    showArticle(mess);
                     break;
 
                 case 8:
@@ -102,10 +91,15 @@ int Client::application(MessageHandler mess){
                     error(1);
                     break;
             }
+//            cout << "In connected? " << mess.isConnected();
         }else {
             error(1);
             cin.clear();
             cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        }
+
+        if(cin.eof()){
+            break;
         }
     }
     return 0;
@@ -183,7 +177,7 @@ bool Client::cancelCommand(){
     }
 }
 
-void Client::listNewsGroups(MessageHandler mess){ 
+void Client::listNewsGroups(MessageHandler& mess){ 
     mess.sendCode(int(Protocol::COM_LIST_NG));
     mess.sendCode(int(Protocol::COM_END));
 
@@ -205,7 +199,7 @@ void Client::listNewsGroups(MessageHandler mess){
     }
     
 }
-void Client::createNewsGroups(MessageHandler mess){ 
+void Client::createNewsGroups(MessageHandler& mess){ 
     bool inputCheck = true;
     string nameOfNewsGroup;
 
@@ -250,16 +244,13 @@ void Client::createNewsGroups(MessageHandler mess){
     }
     
 }
-void Client::deleteNewsGroups(MessageHandler mess){ 
+void Client::deleteNewsGroups(MessageHandler& mess){ 
 
     cout << "Enter Id of the NewsGroup you want to delete: ";
     int idOfNewsGroup;
     if(cin >> idOfNewsGroup && cin.peek() == '\n'){
         cin.ignore();
-    // string temp;
-    // std::getline(cin, temp);
 
-    // if(!cin.fail() && temp == ""){
         if(!cancelCommand()){
             mess.sendCode(int(Protocol::COM_DELETE_NG));
             mess.sendIntParameter(idOfNewsGroup);
@@ -293,16 +284,13 @@ void Client::deleteNewsGroups(MessageHandler mess){
     }
     
 }
-void Client::listArticle(MessageHandler mess){ 
+void Client::listArticle(MessageHandler& mess){ 
 
     cout << "Enter Id of the NewsGroup to get the list of Articles: ";
     int idOfNewsGroupArticle;
     if(cin >> idOfNewsGroupArticle && cin.peek() == '\n'){
         cin.ignore();
-    // string temp;
-    // std::getline(cin, temp);
 
-    // if(!cin.fail()){
         if(!cancelCommand()){
             mess.sendCode(int(Protocol::COM_LIST_ART));
             mess.sendIntParameter(idOfNewsGroupArticle);
@@ -344,7 +332,7 @@ void Client::listArticle(MessageHandler mess){
     }
     
 }
-void Client::createArticle(MessageHandler mess){
+void Client::createArticle(MessageHandler& mess){
 
     cout << "Enter Id of NewsGroup where Article should be created: ";
     int idOfNewsGroup;
@@ -399,23 +387,23 @@ void Client::createArticle(MessageHandler mess){
             if(mess.recvCode() == int(Protocol::ANS_CREATE_ART)){
                 int answerCode = mess.recvCode();
                 if(answerCode == int(Protocol::ANS_ACK)){
-                cout << "New Article created." << endl;
-                cout << "Name: " << articleName << endl;
-                cout << "Author: " << articleAuthor << endl;
-                cout << "Text: " << articleText << endl;
-            }else if(answerCode == int(Protocol::ANS_NAK)){
-                if(mess.recvCode() == int(Protocol::ERR_NG_DOES_NOT_EXIST)){
-                    cout << "New NewsGroup not created." << endl;
-                    cout << "Reason: NewsGroup (" << idOfNewsGroup << ") does not exists." << endl;
+                    cout << "New Article created." << endl;
+                    cout << "Name: " << articleName << endl;
+                    cout << "Author: " << articleAuthor << endl;
+                    cout << "Text: " << articleText << endl;
+                }else if(answerCode == int(Protocol::ANS_NAK)){
+                    if(mess.recvCode() == int(Protocol::ERR_NG_DOES_NOT_EXIST)){
+                        cout << "New NewsGroup not created." << endl;
+                        cout << "Reason: NewsGroup (" << idOfNewsGroup << ") does not exists." << endl;
+                    }else{
+                        error(-1);
+                    }
                 }else{
                     error(-1);
                 }
-            }else{
-                error(-1);
-            }
-            if(mess.recvCode() != int(Protocol::ANS_END)){
-                error(-1);
-            }
+                if(mess.recvCode() != int(Protocol::ANS_END)){
+                    error(-1);
+                }
             }else{
                 error(-1);
             }
@@ -427,7 +415,7 @@ void Client::createArticle(MessageHandler mess){
     }
 
 }
-void Client::deleteArticle(MessageHandler mess){ 
+void Client::deleteArticle(MessageHandler& mess){ 
 
     cout << "Enter Id of NewsGroup where Article should be deleted: ";
     int idOfNewsGroup, idOfArticle;
@@ -481,7 +469,7 @@ void Client::deleteArticle(MessageHandler mess){
         cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     }
 }
-void Client::showArticle(MessageHandler mess){
+void Client::showArticle(MessageHandler& mess){
 
     cout << "Enter Id of NewsGroup where Article is: ";
     int idOfNewsGroup, idOfArticle;
