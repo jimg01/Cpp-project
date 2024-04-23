@@ -10,45 +10,48 @@ DEPFLAGS = -MT $@ -MMD -MP -MF $*.d
 # Define preprocessor, compiler, and linker flags. Uncomment the # lines
 # if you use clang++ and wish to use libc++ instead of GNU's libstdc++.
 # -g is for debugging.
-CPPFLAGS =  -Iinclude
-CXXFLAGS =  -O2 -Wall -Wextra -pedantic-errors -Wold-style-cast 
-CXXFLAGS += -std=c++11 
+
+CPPFLAGS  = -I../include
+CXXFLAGS =  -O2 -Wall -Wextra -pedantic-errors -Wold-style-cast
+CXXFLAGS += -std=c++11
 CXXFLAGS += -g
 CXXFLAGS += $(DEPFLAGS)
-LDFLAGS =   -g -Llib
+LDFLAGS   = -g -L../lib
+
 #CPPFLAGS += -stdlib=libc++
 #CXXFLAGS += -stdlib=libc++
 #LDFLAGS +=  -stdlib=libc++
 
+# Libraries
+
+LDLIBS = -lclientserver
+
 # Targets
+PROGS = client testHandler
 
-all: lib/libclientserver.a
-	make -C example
-	make -C protocol
+all: $(PROGS)
 
-# Create the library; ranlib is for Darwin (OS X) and maybe other systems.
-# Doesn't seem to do any damage on other systems.
+# Targets rely on implicit rules for compiling and linking
+# The dependency on libclientserver.a is not defined.
 
-lib/libclientserver.a: src/connection.o src/server.o
-	mkdir -p lib
-	ar rv lib/libclientserver.a  src/connection.o src/server.o
-#	ranlib lib/libclientserver.a
+client: client.o messagehandler.o 
+testHandler: testHandler.o messagehandler.o 
+
+SRC = $(wildcard *.cc)
 
 # Phony targets
 .PHONY: all clean distclean
 
-SRC = $(wildcard src/*.cc)
 
 # Standard clean
 clean:
-	-rm $(SRC:.cc=.o) $(PROGS)
+	-rm -f $(SRC:.cc=.o) $(PROGS)
+
 
 distclean: clean
-	-rm lib/libclientserver.a
-	-rmdir lib
-	-rm $(SRC:.cc=.d) 
-	make -C example distclean
-	make -C protocol distclean
+	-rm $(SRC:.cc=.d)
+
+#	-rm -r $(addsuffix .dSym,$(PROGS)) # for cleaning on Macs
 
 
 # Include the *.d files

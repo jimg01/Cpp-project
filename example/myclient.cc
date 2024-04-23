@@ -84,7 +84,9 @@ int app(const Connection& conn)
 }
 
 int main(int argc, char* argv[])
-{
+{       
+        //cout << argc << argv[0] << argv[1];
         Connection conn = init(argc, argv);
+        
         return app(conn);
 }

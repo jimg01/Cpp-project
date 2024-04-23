@@ -1,0 +1,15 @@
+------------------------------------------------------------
+------------------------------------------------------------
+Unresolved issues for messagehandler implementation (.cc):
+------------------------------------------------------------
+
+There is no 'Connection::CONNECTION_CLOSED' in Connection-files.. 
+If 'my_socket == no_socket' has it been closed or how to determine this??
+
+Yet to write 'ProtocolViolationException', there is none in the repository right now..
+-> Write our own Exception for throwing?
+
+Original code use LogWindow-class, but this is nowwhere to be found.. 
+-> solve by just writing to a regular .txt file?? No logging atm.
+
+Much code yet to be tested due to unable to set up a open Connection..
