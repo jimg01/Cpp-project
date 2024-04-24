@@ -1,12 +1,14 @@
 #include "newsgroup.h"
 #include "article.h"
 #include <vector>
+#include <iostream>
 
 NewsGroup::NewsGroup(int& ind, std::string& n){
 	id = ind;
 	name = n;
 	articles = std::map<int, Article>();	
-	next_free_index = 1;
+	NG_next_free_index = 1;
+	std::cout << "inisitannized a ng" << articles.size() << NG_next_free_index << std::endl;
 }
 
 NewsGroup::~NewsGroup(){}
@@ -20,12 +22,15 @@ const std::string& NewsGroup::get_name() const{
 }
 
 const std::map<int, Article>& NewsGroup::map_of_articles() const{
+	std::cout << "to lister " << articles.size() << NG_next_free_index << std::endl;
 	return articles;	
 }
 
 bool NewsGroup::create_article(std::string title, std::string author, std::string text){	
-	articles.insert(std::make_pair(next_free_index, Article(next_free_index, title, author, text)));
-	next_free_index++;
+	articles.insert(std::make_pair(NG_next_free_index, Article(NG_next_free_index, title, author, text)));
+	std::cout << articles.size() << NG_next_free_index << std::endl;
+	++NG_next_free_index;
+	std::cout << "after" << articles.size() << NG_next_free_index << std::endl;
 	return true;
 }
 
@@ -44,9 +49,9 @@ std::string NewsGroup::to_string(){
 	return "not implemented";
 	/*
 	std::string s = "Group Name: " + name + " Id: " + std::to_string(id)
-				+ "\nNumber of Articles: " + std::to_string(next_free_index -1);
+				+ "\nNumber of Articles: " + std::to_string(NG_next_free_index -1);
 				
-	if(next_free_index != 1){
+	if(NG_next_free_index != 1){
 		s.append("\nArticles:\n");
 		for (auto& article : articles){
 			Article ab = article.second();

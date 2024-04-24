@@ -126,6 +126,7 @@ void MessageHandler::sendStringParameter(std::string param){
 		sendByte(param[i]);
 //			logWindow.logChar(param.charAt(i));
 	}
+
 }
 
 
@@ -133,7 +134,7 @@ void MessageHandler::sendStringParameter(std::string param){
 void MessageHandler::sendByte(int code) {
 	try {
 			conn.write(char(code));
-			std::cout << char(code) << std::endl;
+			std::cout << char(code) << " or as a number: " << code << std::endl;
 		} catch (ConnectionClosedException e) {
 			throw (e);
 		}

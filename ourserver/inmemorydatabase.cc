@@ -52,11 +52,12 @@ std::vector<std::pair<int, std::string>> InMemoryDatabase::list_articles(int id_
 		for (auto it = map_of_articles.begin(); it != map_of_articles.end(); ++it){
 			list_of_articles.push_back(std::make_pair((*it).first, (*it).second.get_name()) );
 		}
+		std::cout << list_of_articles.size() << map_of_articles.size() << std::endl;
 	}
 	catch(const std::out_of_range& e){
 		//News group does not exist
 		std::cout << "no such news group" << std::endl;
-		throw std::runtime_error("no such news group");
+		throw std::runtime_error("no such NG");
 	}
 	return list_of_articles;
 }

@@ -182,11 +182,11 @@ void Client::listNewsGroups(MessageHandler& mess){
     mess.sendCode(int(Protocol::COM_END));
 
     if(mess.recvCode() == int(Protocol::ANS_LIST_NG)){
-        int n = mess.recvInt();
+        int n = mess.recvIntParameter();
         if(n != 0){
             cout << "Id : Name" << endl;
             for(int i = 0; i < n; i++){
-                cout << mess.recvInt() << " : " << mess.recvStringParameter() << endl;
+                cout << mess.recvIntParameter() << " : " << mess.recvStringParameter() << endl;
             }
         }else {
             cout << "No NewsGroups exists" << endl;

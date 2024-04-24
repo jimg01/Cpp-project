@@ -22,7 +22,7 @@ public:
 	
 private:
 	int id;
-	int next_free_index;	//change to be time-based instead?
+	int NG_next_free_index;	//change to be time-based instead?
 	
 	std::string name;
 	std::map<int, Article> articles;
