@@ -34,7 +34,7 @@ all: $(PROGS)
 # Targets rely on implicit rules for compiling and linking
 # The dependency on libclientserver.a is not defined.
 
-diskdatabase: diskdatabase.o
+diskdatabase: diskdatabase.o txthandler.o
 test: test.o
 
 SRC = $(wildcard *.cc)

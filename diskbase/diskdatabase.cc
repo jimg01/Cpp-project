@@ -4,7 +4,7 @@
 #include<filesystem>
 #include<fstream>
 
-#include"memory.h"
+#include"TxTHandler.h"
 
 using std::string;
 using std::cin;
@@ -23,7 +23,7 @@ void showOptions(){
     cout << "Insert input: ";
 }
 
-void makeDir(){
+void makeDir(TxTHandler& th){
 
     std::ofstream str;
 
@@ -39,14 +39,14 @@ void makeDir(){
     //cout << basePath << endl;
     if(!fs::exists(basePath)){
         fs::create_directory(basePath);
-        makeMemory();
+        th.makeMemory();
     }
     fs::path newDir = basePath.append(userInput);
     //cout << string(newDir) << endl;
 
     if(!fs::exists(newDir)){
         fs::create_directory(newDir);
-        addDirectoryToMemory(string(newDir));
+        th.addDirectoryToMemory(string(newDir));
         cout << "New Directory created" << endl;
     }else{
         cout << "Directory allready exists" << endl;
@@ -54,14 +54,18 @@ void makeDir(){
             
 }
 
-void showDir(){
+void showDir(TxTHandler& th){
     if(fs::exists("database")){
-        int n = 1;
+        int index = th.getIndexInMemory();
         cout << "Id : Directory" << endl;
-        for(auto entry : fs::recursive_directory_iterator("database")){
-            cout << n << " : "<< entry.path() << endl;
-            n++;
+        for(int i = 0; i < index; i++){
+            cout << th.getDirectoryFromIndex(i+1) << endl;
         }
+        
+        // for(auto entry : fs::recursive_directory_iterator("database")){
+        //     cout << n << " : "<< entry.path() << endl;
+        //     n++;
+        // }
     }else{
         cout << "No database initulaized" << endl;
     }
@@ -72,7 +76,7 @@ void deleteDatabase(){
     cout << "Database removed" << endl;
 }
 
-void makeFile(){
+void makeFile(TxTHandler& th){
 
 
     cout << "Insert name of new file: ";
@@ -87,6 +91,9 @@ void makeFile(){
 int main(){
     bool whileCheck = true;
     int userInput = -1;
+
+    TxTHandler th;
+
     while(whileCheck){
 
         showOptions();
@@ -102,15 +109,15 @@ int main(){
                     break;
                 
                 case 1:
-                    makeDir();
+                    makeDir(th);
                     break;
                 
                 case 2:
-                    showDir();
+                    showDir(th);
                     break;
                 
                 case 3:
-                    makeFile();
+                    makeFile(th);
                     break;
 
                 case 4:
