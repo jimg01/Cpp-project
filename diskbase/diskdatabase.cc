@@ -1,8 +1,8 @@
-#include "inmemorydatabase.h"
+#include "diskdatabase.h"
 #include <iostream>
 #include <algorithm>
 
-InMemoryDatabase::InMemoryDatabase(){
+DiskDatabase::DiskDatabase(){
 	news_groups = std::map<int, NewsGroup>();
 	next_free_index = 0;
 }

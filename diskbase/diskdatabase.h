@@ -1,15 +1,13 @@
-#ifndef INMEMORYDATABASE_H
-#define INMEMORYDATABASE_H
+#ifndef DISKDATABASE_H
+#define DISKDATABASE_H
 
 #include "database_interface.h"
-#include "newsgroup.h"
-#include "article.h"
 #include <map>
 
-class InMemoryDatabase : public Database_interface{
+class DiskDatabase : public Database_interface{
 public:
-	InMemoryDatabase();
-	~InMemoryDatabase();
+	DiskDatabase();
+	~DiskDatabase();
 	//behövs detta?
 	virtual std::vector<std::pair<int, std::string>> list_NG() override;
 	virtual bool create_NG(std::string name) override;
