@@ -4,7 +4,7 @@
 #include<filesystem>
 #include<fstream>
 
-#include"TxTHandler.h"
+#include "txthandler.h"
 
 using std::string;
 using std::cin;
