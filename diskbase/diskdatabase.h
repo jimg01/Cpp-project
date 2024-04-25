@@ -16,9 +16,11 @@ public:
 	virtual bool create_article(int id_NG, std::string name, std::string author, std::string text) override;
 	virtual void delete_article(int id_NG, int id_article) override;
 	virtual std::vector<std::string> get_article(int id_NG, int id_article) override;
+
+	const std::string infoFile = "info.txt";
 private:
-	std::map<int, NewsGroup> news_groups;
-	int next_free_index;
+	//std::map<int, NewsGroup> news_groups;
+	
 };
 
 #endif

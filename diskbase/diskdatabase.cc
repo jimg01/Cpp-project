@@ -1,68 +1,77 @@
 #include "diskdatabase.h"
 #include <iostream>
 #include <algorithm>
+#include <filesystem>
+#include <fstream>
+
+using std::string;
+using std::cin;
+using std::cout;
+using std::cerr;
+using std::endl;
+namespace fs = std::filesystem;
+
+const fs::path basePath = fs::current_path() / "testdirs";	
 
 DiskDatabase::DiskDatabase(){
-	news_groups = std::map<int, NewsGroup>();
-	next_free_index = 0;
 }
 
-InMemoryDatabase::~InMemoryDatabase() = default;
+DiskDatabase::~DiskDatabase() = default;
 
-std::vector<std::pair<int, std::string>> InMemoryDatabase::list_NG(){
-	std::vector<std::pair<int, std::string>> list_of_NG;
-	for (auto it = news_groups.begin(); it != news_groups.end(); ++it){
-		list_of_NG.push_back(std::make_pair((*it).first, (*it).second.get_name()) );
-	}
-	return list_of_NG;
-}
-
-bool InMemoryDatabase::create_NG(std::string name){
-	//Since you're using a map to store news groups, you can directly check if the name exists with news_groups.find(name) != news_groups.end(). This approach has a logarithmic complexity,
-	auto it = std::find_if(news_groups.begin(), news_groups.end(), [&name](const std::pair<int, NewsGroup>& pair){return name == pair.second.get_name();});
-	if (it != news_groups.end()){
-		return false;
-	} else{
-		news_groups.insert(std::make_pair(next_free_index, NewsGroup(next_free_index, name)));
-		++next_free_index;
-		return true;
-	}
-}
-
-bool InMemoryDatabase::delete_NG(int id_NG){
-	try{
-		news_groups.at(id_NG); //throws out_of_range error
-		news_groups.erase(id_NG);
-		return true;
-	}
-	catch(const std::out_of_range& e){
-		//News group does not exist
-		std::cout << "no such news group" << std::endl;
-		return false;
-	}
+std::vector<std::pair<int, std::string>> DiskDatabase::list_NG(){
 	
 }
 
-std::vector<std::pair<int, std::string>> InMemoryDatabase::list_articles(int id_NG){
-	std::vector<std::pair<int, std::string>> list_of_articles{};
-	try{
-		auto NG = news_groups.at(id_NG);
-		std::map<int, Article> map_of_articles = NG.map_of_articles();
-		//for (const auto& [id, ng] : news_groups)
-		for (auto it = map_of_articles.begin(); it != map_of_articles.end(); ++it){
-			list_of_articles.push_back(std::make_pair((*it).first, (*it).second.get_name()) );
-		}
-		std::cout << list_of_articles.size() << map_of_articles.size() << std::endl;
-	}
-	catch(const std::out_of_range& e){
-		//News group does not exist
-		std::cout << "no such news group" << std::endl;
-		throw std::runtime_error("no such NG");
-	}
-	return list_of_articles;
+bool DiskDatabase::create_NG(std::string name){
+	return false;
 }
 
-bool InMemoryDatabase::create_article(int id_NG, std::string name, std::string author, std::string text){
+bool DiskDatabase::delete_NG(int id_NG){
+	
+	return false;
+}
+
+std::vector<std::pair<int, std::string>> DiskDatabase::list_articles(int id_NG){
+	
+}
+
+bool DiskDatabase::create_article(int id_NG, std::string name, std::string author, std::string text){
+/*	cout << "enter newsgroup: " << id_NG << endl;
+	fs::current_path(basePath / std::to_string(id_NG));
+	cout << "Currently at \n" << fs::current_path() << endl;
+*/
+	/*
+    cout << "Insert name of new file: ";
+    string nameOfDir;
+    getline(cin, nameOfDir);
+	*/
+	
+/*    cout << "Insert name of new file: ";
+    string userInput;
+    getline(cin, userInput);
+    //std::fstream userStream;
+*/
+	
+    //creation of file
+    const fs::path filePath = fs::current_path();
+    const string filename = std::to_string(id_NG) + ".txt";
+    if(fs::exists(filePath/filename)){	//will not happen probably
+    	return false;
+    }
+    
+    std::ofstream{filePath/filename}; // create regular file
+
+	std::ofstream os(filePath/filename);
+	os << name << endl;
+	os << author << endl;
+	os << text << endl;
+    os.close();
+    
+    cout << "\nThe follwing file was created: " << endl 
+    		<< filePath/filename << endl;    
+
+
+/*
 	try{
 		auto NG = news_groups.at(id_NG); 
 		return NG.create_article(name, author, text);
@@ -72,28 +81,55 @@ bool InMemoryDatabase::create_article(int id_NG, std::string name, std::string a
 		std::cout << "no such news group" << std::endl;
 		return false;
 	}
+*/
+
+	return true;	
 }
 
-void InMemoryDatabase::delete_article(int id_NG, int id_article){
-	try{
-		auto NG = news_groups.at(id_NG);
-		try{
-			NG.delete_article(id_article);
+void DiskDatabase::delete_article(int id_NG, int id_article){
+	//string ng = "fakeNG";
+	
+	cout << "\nenter newsgroup: " << std::to_string(id_NG) << endl;
+	fs::current_path(basePath / std::to_string(id_NG));
+	cout << "Currently at \n" << fs::current_path() << endl;
+
+	string filename;
+	
+	do{
+		cout << "Insert name of to be deleted article: " << endl;
+	    getline(cin, filename);
+		filename = filename + ".txt";	
+
+		cout << "Checks file: \n" << fs::current_path() / filename << endl;
+		if(fs::exists(fs::current_path() / filename)){
+			cout << "file exists!" << endl;	
+			cout << "Delete? (y/n) " << endl;
+			char opt;
+			cin >> opt;
+			if(opt == 'y'){
+				fs::remove(fs::current_path() / filename);
+				cout << "\nfile was removed!" << endl;	
+				break;	
+			} else {
+				cout << "\nNO file was removed!" << endl;		
+			}
+			
+		} else{
+			cout << "file does NOT exist!" << endl;		
 		}
-		catch(const std::out_of_range& e){ //catch error thrown by delete_article in NewsGroup
-			//artcie does not exist
-			std::cout << "no such article" << std::endl;
-			throw std::runtime_error("no such article");
-		}
-	}
-	catch(const std::out_of_range& e){
-		//News group does not exist
-		std::cout << "no such news group" << std::endl;
-		throw std::runtime_error("no such NG");
-	}
+	} while (!fs::exists(fs::current_path() / filename));
+
+    
+	cout << "\nleave newsgroup: " << id_NG << endl;
+	//cout << fs::current_path() << endl;
+	fs::current_path(fs::current_path().parent_path());
+	cout << "Currently at \n" << fs::current_path() << endl;
+
 }
 
-std::vector<std::string> InMemoryDatabase::get_article(int id_NG, int id_article){
+std::vector<std::string> DiskDatabase::get_article(int id_NG, int id_article){
+
+/*
 	try{
 		auto NG = news_groups.at(id_NG);
 		try{
@@ -112,5 +148,7 @@ std::vector<std::string> InMemoryDatabase::get_article(int id_NG, int id_article
 		std::cout << "no such news group" << std::endl;
 		throw std::runtime_error("no such NG");
 	}
+
+	*/
 }
 

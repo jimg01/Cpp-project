@@ -4,7 +4,7 @@
 #include<filesystem>
 #include<fstream>
 
-#include "txthandler.h"
+#include "diskdatabase.h"
 
 using std::string;
 using std::cin;
@@ -23,7 +23,7 @@ void showOptions(){
     cout << "Insert input: ";
 }
 
-void makeDir(TxTHandler& th){
+void makeDir(){
 
     std::ofstream str;
 
@@ -39,14 +39,14 @@ void makeDir(TxTHandler& th){
     //cout << basePath << endl;
     if(!fs::exists(basePath)){
         fs::create_directory(basePath);
-        th.makeMemory();
+ //       th.makeMemory();
     }
     fs::path newDir = basePath.append(userInput);
     //cout << string(newDir) << endl;
 
     if(!fs::exists(newDir)){
         fs::create_directory(newDir);
-        th.addDirectoryToMemory(string(newDir));
+   //     th.addDirectoryToMemory(string(newDir));
         cout << "New Directory created" << endl;
     }else{
         cout << "Directory allready exists" << endl;
@@ -54,45 +54,14 @@ void makeDir(TxTHandler& th){
             
 }
 
-void showDir(TxTHandler& th){
-    if(fs::exists("database")){
-        int index = th.getIndexInMemory();
-        cout << "Id : Directory" << endl;
-        for(int i = 0; i < index; i++){
-            cout << th.getDirectoryFromIndex(i+1) << endl;
-        }
-        
-        // for(auto entry : fs::recursive_directory_iterator("database")){
-        //     cout << n << " : "<< entry.path() << endl;
-        //     n++;
-        // }
-    }else{
-        cout << "No database initulaized" << endl;
-    }
-}
 
-void deleteDatabase(){
-    fs::remove_all("database");
-    cout << "Database removed" << endl;
-}
-
-void makeFile(TxTHandler& th){
-
-
-    cout << "Insert name of new file: ";
-    string nameOfDir;
-    getline(cin, nameOfDir);
-
-    cout << "Insert name of new file: ";
-    string userInput;
-    getline(cin, userInput);
-}
 
 int main(){
     bool whileCheck = true;
     int userInput = -1;
 
-    TxTHandler th;
+    DiskDatabase database;
+    fs::path basePath = fs::current_path() / "testdirs";
 
     while(whileCheck){
 
@@ -104,46 +73,86 @@ int main(){
             switch (userInput) 
             {
                 case 0:
-                    cout << "Goodbye!" << endl;
+                	{
+                    cout << "\nGoodbye!" << endl;
                     whileCheck = false;
                     break;
-                
+                	}
                 case 1:
-                    makeDir(th);
+                    //makeDir(th);
                     break;
                 
                 case 2:
-                    showDir(th);
+                    //showDir(th);
                     break;
                 
                 case 3:
-                    makeFile(th);
-                    break;
+					{
+                	//go into correct newsgroup
+                	basePath = basePath / "fakeNG";
+					
+                	
+                	std::fstream infoStream;
+                	cout << basePath << endl;
+                	fs::current_path(basePath);
+                	
+                	infoStream.open(basePath / database.infoFile);
+					int n = -1;
+					string temp;
+					getline(infoStream, temp);
+					cout << temp << endl;
+					infoStream >> n;
+					infoStream.close();
 
+                	cout << "number of articles: " << n << endl;
+					n += 1;
+
+					string name, author, text;
+					cout << "Input article name " << endl;
+					cin >> name;
+					cout << "Input author " << endl;
+					cin >> author;
+					cout << "Input text " << endl;	//fix so okay with multiline
+					cin >> text;
+					
+                	if(database.create_article(n, name, author, text)){
+                		cout << "Article was created!" << endl;
+                	} else{
+                		cout << "Article was NOT created!" << endl;
+                	}
+
+               		cout << "leave newsgroup: " << "fakeNG" << endl;
+					cout << fs::current_path() << endl;
+					fs::current_path(fs::current_path().parent_path());
+					cout << "Currently at \n" << fs::current_path() << endl;
+
+                    break;
+					 }       
+					 
                 case 4:
-                    
+                      //makeDir(th);
                     break;
                 
                 case 5:
-                    
+                      //makeDir(th);
                     break;
                 
                 case 6:
-                    
+                      //makeDir(th);
                     break;
                 
                 case 7:
-                    
+                      //makeDir(th);
                     break;
 
                 case 8:
-
+						  //makeDir(th);
                     break;
                 
                 case 9:
-                    deleteDatabase();
+       //             deleteDatabase();
                     break;
-                
+ 
                 default:
                     cout << "Invalid Input!" << endl;
                     break;
