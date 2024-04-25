@@ -200,6 +200,7 @@ void Client::listNewsGroups(MessageHandler& mess){
     }
     
 }
+
 void Client::createNewsGroups(MessageHandler& mess){ 
     bool inputCheck = true;
     string nameOfNewsGroup;
@@ -245,6 +246,7 @@ void Client::createNewsGroups(MessageHandler& mess){
     }
     
 }
+
 void Client::deleteNewsGroups(MessageHandler& mess){ 
 
     cout << "Enter Id of the NewsGroup you want to delete: ";
@@ -285,6 +287,7 @@ void Client::deleteNewsGroups(MessageHandler& mess){
     }
     
 }
+
 void Client::listArticle(MessageHandler& mess){ 
 
     cout << "Enter Id of the NewsGroup to get the list of Articles: ";
@@ -333,6 +336,7 @@ void Client::listArticle(MessageHandler& mess){
     }
     
 }
+
 void Client::createArticle(MessageHandler& mess){
 
     cout << "Enter Id of NewsGroup where Article should be created: ";
@@ -416,6 +420,7 @@ void Client::createArticle(MessageHandler& mess){
     }
 
 }
+
 void Client::deleteArticle(MessageHandler& mess){ 
 
     cout << "Enter Id of NewsGroup where Article should be deleted: ";
@@ -470,6 +475,7 @@ void Client::deleteArticle(MessageHandler& mess){
         cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     }
 }
+
 void Client::showArticle(MessageHandler& mess){
 
     cout << "Enter Id of NewsGroup where Article is: ";

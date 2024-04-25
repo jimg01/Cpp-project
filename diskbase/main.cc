@@ -4,7 +4,8 @@
 #include<filesystem>
 #include<fstream>
 
-#include "txthandler.h"
+#include"diskdatabase.h"
+#include"database_interface.h"
 
 using std::string;
 using std::cin;
@@ -14,85 +15,212 @@ using std::endl;
 using std::move;
 namespace fs = std::filesystem;
 
-void showOptions(){
-    cout << endl;
-    cout << "(0) Close" << endl;
-    cout << "(1) Make dir" << endl;
-    cout << "(2) Show database" << endl;
-    cout << "(9) Delete database" << endl;
-    cout << "Insert input: ";
+void showNewsGroups(DiskDatabase& ddb){
+    std::vector<std::pair<int, std::string>> listOfNG = ddb.list_NG();
+    if(listOfNG.size() != 0){
+        cout << "Id : Directory" << endl;
+        for(std::pair<int, std::string> entry : listOfNG){
+            cout << entry.first << " : " << entry.second << endl;
+        }
+    }else{
+        cout << "No NewsGroups exists" << endl;
+    }
 }
 
-void makeDir(TxTHandler& th){
+void createNewsGroup(DiskDatabase& ddb){
 
     std::ofstream str;
 
 
-    cout << "Insert name of new dir: ";
+    cout << "Insert name of new NewsGroup: ";
     string userInput;
     getline(cin, userInput);
-    //fs::path currPath = fs::current_path();
-    //fs::path basePath = currPath.append("/database");
-    fs::path basePath = "database";
-    string memoryFile = string(basePath) + "/memory.txt";
-    //cout << currPath << endl;
-    //cout << basePath << endl;
-    if(!fs::exists(basePath)){
-        fs::create_directory(basePath);
-        th.makeMemory();
-    }
-    fs::path newDir = basePath.append(userInput);
-    //cout << string(newDir) << endl;
 
-    if(!fs::exists(newDir)){
-        fs::create_directory(newDir);
-        th.addDirectoryToMemory(string(newDir));
-        cout << "New Directory created" << endl;
+    if(ddb.create_NG(userInput)){
+        cout << "New NewsGroup was created" << endl;
     }else{
-        cout << "Directory allready exists" << endl;
-    }
-            
+        cout << "Newsgroup already exists" << endl;
+    }       
 }
 
-void showDir(TxTHandler& th){
-    if(fs::exists("database")){
-        int index = th.getIndexInMemory();
-        cout << "Id : Directory" << endl;
-        for(int i = 0; i < index; i++){
-            cout << th.getDirectoryFromIndex(i+1) << endl;
+void deleteNewsGroup(DiskDatabase& ddb){
+
+    cout << "Enter Id of the NewsGroup you want to delete: ";
+    int idOfNewsGroup;
+    if(cin >> idOfNewsGroup && cin.peek() == '\n'){
+        cin.ignore();
+
+        if(ddb.delete_NG(idOfNewsGroup)){
+            cout << "NewsGroup was deleted" << endl;
+        }else{
+            cout << "No NewsGroup with that Id" << endl;
         }
         
-        // for(auto entry : fs::recursive_directory_iterator("database")){
-        //     cout << n << " : "<< entry.path() << endl;
-        //     n++;
-        // }
     }else{
-        cout << "No database initulaized" << endl;
+        cout << "Invalid Input!" << endl;
+        cin.clear();
+        cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     }
 }
 
-void deleteDatabase(){
-    fs::remove_all("database");
-    cout << "Database removed" << endl;
+// void makeFile(){
+
+
+//     cout << "Insert name of new file: ";
+//     string nameOfDir;
+//     getline(cin, nameOfDir);
+
+//     cout << "Insert name of new file: ";
+//     string userInput;
+//     getline(cin, userInput);
+// }
+
+// void createArticle(TxTHandler& th){
+// 	//string basePath = fs::current_path() + "/testdirs";	//go down to correct
+// 	string ng = "fakeNG";
+// 	cout << "enter newsgroup: " << ng << endl;
+// 	fs::current_path(basePath / ng);
+// 	cout << "Currently at \n" << fs::current_path() << endl;
+
+// 	/*
+//     cout << "Insert name of new file: ";
+//     string nameOfDir;
+//     getline(cin, nameOfDir);
+// 	*/
+	
+//     cout << "Insert name of new file: ";
+//     string userInput;
+//     getline(cin, userInput);
+//     std::fstream fstream;
+
+//     //creation of file
+//     const fs::path filePath = fs::current_path();
+//     const string filename = userInput + ".txt";
+//     std::ofstream{filePath/filename}; // create regular file
+    
+//     cout << "\nThe follwing file was created: " << endl 
+//     		<< filePath/filename << endl;    
+
+// 	cout << "leave newsgroup: " << ng << endl;
+// 	cout << fs::current_path() << endl;
+// 	fs::current_path(fs::current_path().parent_path());
+// 	cout << "Currently at \n" << fs::current_path() << endl;
+// }
+
+// void deleteArticle(TxTHandler& th){
+
+// 	string ng = "fakeNG";
+// 	cout << "\nenter newsgroup: " << ng << endl;
+// 	fs::current_path(basePath / ng);
+// 	cout << "Currently at \n" << fs::current_path() << endl;
+
+// 	string filename;
+	
+// 	do{
+// 		cout << "Insert name of to be deleted article: " << endl;
+// 	    getline(cin, filename);
+// 		filename = filename + ".txt";	
+
+// 		cout << "Checks file: \n" << fs::current_path() / filename << endl;
+// 		if(fs::exists(fs::current_path() / filename)){
+// 			cout << "file exists!" << endl;	
+// 			cout << "Delete? (y/n) " << endl;
+// 			char opt;
+// 			cin >> opt;
+// 			if(opt == 'y'){
+// 				fs::remove(fs::current_path() / filename);
+// 				cout << "\nfile was removed!" << endl;	
+// 				break;	
+// 			} else {
+// 				cout << "\nNO file was removed!" << endl;		
+// 			}
+			
+// 		} else{
+// 			cout << "file does NOT exist!" << endl;		
+// 		}
+// 	} while (!fs::exists(fs::current_path() / filename));
+
+    
+// 	cout << "\nleave newsgroup: " << ng << endl;
+// 	//cout << fs::current_path() << endl;
+// 	fs::current_path(fs::current_path().parent_path());
+// 	cout << "Currently at \n" << fs::current_path() << endl;
+	
+	
+// 	/*
+//     cout << "Insert name of new file: ";
+//     string userInput;
+//     getline(cin, userInput);
+//     std::fstream fstream;
+//     string filePath = fs::current_path().string() + "/" +  userInput + ".txt";
+
+// 	string command = "touch " + filePath;
+//     std::system(command.c_str());
+//     */
+// }
+
+bool makeDesition(int n, DiskDatabase& ddb){
+    switch (n) 
+    {
+        
+        case 1:
+            showNewsGroups(ddb);
+            break;
+        
+        case 2:
+            createNewsGroup(ddb);
+            break;
+        
+        case 3:
+            deleteNewsGroup(ddb);
+            break;
+
+        case 4:
+            
+            break;
+        
+        case 5:
+            
+            break;
+        
+        case 6:
+            
+            break;
+        
+        case 7:
+            
+            break;
+        
+        case 8:
+            cout << "Goodbye!" << endl;
+            return false;
+        
+        default:
+            cout << "Invalid Input!" << endl;
+            break;
+    }
+    return true;
 }
 
-void makeFile(TxTHandler& th){
-
-
-    cout << "Insert name of new file: ";
-    string nameOfDir;
-    getline(cin, nameOfDir);
-
-    cout << "Insert name of new file: ";
-    string userInput;
-    getline(cin, userInput);
+void showOptions(){
+    cout << endl;
+    cout << "Choose an option:\n";
+    cout << "(1) List NewsGroups\n";
+    cout << "(2) Create a NewsGroup\n";
+    cout << "(3) Delete a NewsGroup\n";
+    cout << "(4) List Articles in a NewsGroups\n";
+    cout << "(5) Create an Article\n";
+    cout << "(6) Delete an Article\n";
+    cout << "(7) Show an Article\n";
+    cout << "(8) Terminat Client\n";
+    cout << "Insert number: ";
 }
 
 int main(){
     bool whileCheck = true;
     int userInput = -1;
 
-    TxTHandler th;
+    DiskDatabase ddb;
 
     while(whileCheck){
 
@@ -100,55 +228,7 @@ int main(){
 
         if(cin >> userInput && cin.peek() == '\n'){
             cin.ignore();
-            
-            switch (userInput) 
-            {
-                case 0:
-                    cout << "Goodbye!" << endl;
-                    whileCheck = false;
-                    break;
-                
-                case 1:
-                    makeDir(th);
-                    break;
-                
-                case 2:
-                    showDir(th);
-                    break;
-                
-                case 3:
-                    makeFile(th);
-                    break;
-
-                case 4:
-                    
-                    break;
-                
-                case 5:
-                    
-                    break;
-                
-                case 6:
-                    
-                    break;
-                
-                case 7:
-                    
-                    break;
-
-                case 8:
-
-                    break;
-                
-                case 9:
-                    deleteDatabase();
-                    break;
-                
-                default:
-                    cout << "Invalid Input!" << endl;
-                    break;
-            }
-//            cout << "In connected? " << mess.isConnected();
+            whileCheck = makeDesition(userInput, ddb);
         }else {
             cout << "Invalid Input!" << endl;
             cin.clear();

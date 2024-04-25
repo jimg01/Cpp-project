@@ -14,10 +14,15 @@ public:
 	virtual bool delete_NG(int id_NG) override;
 	virtual std::vector<std::pair<int, std::string>> list_articles(int id_NG) override;//noexcept(false) ; //Throws runtime error
 	virtual bool create_article(int id_NG, std::string name, std::string author, std::string text) override;
-	virtual void delete_article(int id_NG, int id_article) override;
+	virtual bool delete_article(int id_NG, int id_article) override;
 	virtual std::vector<std::string> get_article(int id_NG, int id_article) override;
 private:
-	std::map<int, NewsGroup> news_groups;
+	std::string const infoFile = "info.txt";
+    std::string const databaseDirectory = "database";
+
+    int readSize();
+    std::string readName();
+
 	int next_free_index;
 };
 

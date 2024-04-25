@@ -27,7 +27,7 @@ LDFLAGS   = -g -L../lib
 #LDLIBS = -lclientserver
 
 # Targets
-PROGS = test d_database #diskdatabase d_database
+PROGS = main #test d_database #diskdatabase d_database
 
 all: $(PROGS)
 
@@ -37,6 +37,7 @@ all: $(PROGS)
 diskdatabase: diskdatabase.o txthandler.o
 d_database: d_database.o txthandler.o
 test: test.o
+main: main.o diskdatabase.o
 
 SRC = $(wildcard *.cc)
 
