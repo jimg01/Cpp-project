@@ -27,7 +27,7 @@ LDFLAGS   = -g -L../lib
 #LDLIBS = -lclientserver
 
 # Targets
-PROGS = test d_database main 
+PROGS = test main 
 
 all: $(PROGS)
 

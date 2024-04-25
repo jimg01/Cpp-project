@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <filesystem>
 #include <fstream>
+#include <exception>
 
 using std::string;
 using std::cin;
@@ -58,31 +59,18 @@ bool DiskDatabase::create_article(int id_NG, std::string name, std::string autho
     if(fs::exists(filePath/filename)){	//will not happen probably
     	return false;
     }
-    
-    std::ofstream{filePath/filename}; // create regular file
+   
+    cout << "\nThe follwing file was created: " << endl 
+  		<< filePath/filename << endl;    
 
+   	std::ofstream{filePath/filename}; // create regular file
+   		
 	std::ofstream os(filePath/filename);
 	os << name << endl;
 	os << author << endl;
 	os << text << endl;
-    os.close();
-    
-    cout << "\nThe follwing file was created: " << endl 
-    		<< filePath/filename << endl;    
-
-
-/*
-	try{
-		auto NG = news_groups.at(id_NG); 
-		return NG.create_article(name, author, text);
-	}
-	catch(const std::out_of_range& e){
-		//News group does not exist
-		std::cout << "no such news group" << std::endl;
-		return false;
-	}
-*/
-
+    os.close();	
+   
 	return true;	
 }
 

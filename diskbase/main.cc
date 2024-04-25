@@ -61,7 +61,7 @@ int main(){
     int userInput = -1;
 
     DiskDatabase database;
-    fs::path basePath = fs::current_path() / "testdirs";
+    fs::current_path(fs::current_path() / "testdirs");
 
     while(whileCheck){
 
@@ -89,18 +89,12 @@ int main(){
                 case 3:
 					{
                 	//go into correct newsgroup
-                	basePath = basePath / "fakeNG";
-					
+                	string ng = "fakeNG";
+                	fs::current_path(fs::current_path() / ng);
                 	
                 	std::fstream infoStream;
-                	cout << basePath << endl;
-                	fs::current_path(basePath);
-                	
-                	infoStream.open(basePath / database.infoFile);
+                	infoStream.open(fs::current_path() / database.infoFile);
 					int n = -1;
-					string temp;
-					getline(infoStream, temp);
-					cout << temp << endl;
 					infoStream >> n;
 					infoStream.close();
 
@@ -117,6 +111,10 @@ int main(){
 					
                 	if(database.create_article(n, name, author, text)){
                 		cout << "Article was created!" << endl;
+                		cout << fs::current_path() << endl;
+                		infoStream.open(fs::current_path() / database.infoFile);
+                		infoStream << std::to_string(n);
+                		infoStream.close();
                 	} else{
                 		cout << "Article was NOT created!" << endl;
                 	}
