@@ -135,15 +135,39 @@ void deleteArticle(TxTHandler& th){
 	fs::current_path(basePath / ng);
 	cout << "Currently at \n" << fs::current_path() << endl;
 
+	string filename;
+	
+	do{
+		cout << "Insert name of to be deleted article: " << endl;
+	    getline(cin, filename);
+		filename = filename + ".txt";	
+
+		cout << "Checks file: \n" << fs::current_path() / filename << endl;
+		if(fs::exists(fs::current_path() / filename)){
+			cout << "file exists!" << endl;	
+			cout << "Delete? (y/n) " << endl;
+			char opt;
+			cin >> opt;
+			if(opt == 'y'){
+				fs::remove(fs::current_path() / filename);
+				cout << "\nfile was removed!" << endl;	
+				break;	
+			} else {
+				cout << "\nNO file was removed!" << endl;		
+			}
+			
+		} else{
+			cout << "file does NOT exist!" << endl;		
+		}
+	} while (!fs::exists(fs::current_path() / filename));
+
+    
 	cout << "\nleave newsgroup: " << ng << endl;
 	//cout << fs::current_path() << endl;
 	fs::current_path(fs::current_path().parent_path());
 	cout << "Currently at \n" << fs::current_path() << endl;
-	/*
-    cout << "Insert name of new file: ";
-    string nameOfDir;
-    getline(cin, nameOfDir);
-	*/
+	
+	
 	/*
     cout << "Insert name of new file: ";
     string userInput;
