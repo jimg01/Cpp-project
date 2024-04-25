@@ -37,23 +37,17 @@ std::vector<std::pair<int, std::string>> DiskDatabase::list_articles(int id_NG){
 }
 
 bool DiskDatabase::create_article(int id_NG, std::string name, std::string author, std::string text){
-/*	cout << "enter newsgroup: " << id_NG << endl;
-	fs::current_path(basePath / std::to_string(id_NG));
-	cout << "Currently at \n" << fs::current_path() << endl;
-*/
-	/*
-    cout << "Insert name of new file: ";
-    string nameOfDir;
-    getline(cin, nameOfDir);
-	*/
-	
-/*    cout << "Insert name of new file: ";
-    string userInput;
-    getline(cin, userInput);
-    //std::fstream userStream;
-*/
-	
     //creation of file
+
+    std::fstream infoStream;
+    infoStream.open(fs::current_path() / database.infoFile);
+    
+	int n = -1;
+	infoStream >> n;
+	infoStream.close();
+	cout << "number of articles: " << n << endl;
+	n += 1;
+	
     const fs::path filePath = fs::current_path();
     const string filename = std::to_string(id_NG) + ".txt";
     if(fs::exists(filePath/filename)){	//will not happen probably
@@ -74,45 +68,40 @@ bool DiskDatabase::create_article(int id_NG, std::string name, std::string autho
 	return true;	
 }
 
-void DiskDatabase::delete_article(int id_NG, int id_article){
-	//string ng = "fakeNG";
-	
-	cout << "\nenter newsgroup: " << std::to_string(id_NG) << endl;
-	fs::current_path(basePath / std::to_string(id_NG));
-	cout << "Currently at \n" << fs::current_path() << endl;
-
+bool DiskDatabase::delete_article(int id_NG, int id_article){
 	string filename;
+	string ng = std::to_string(id_NG);
 	
-	do{
-		cout << "Insert name of to be deleted article: " << endl;
-	    getline(cin, filename);
-		filename = filename + ".txt";	
+	//go into correct newsgroup!
+	if(!fs::exists(fs::current_path() / ng) || 
+		!fs::exists(fs::current_path() / ng / to_string(id_article)) ){ // or should throw?
+		return false;
+	}
+ 	
+  	fs::current_path(fs::current_path() / ng);
+	
+	filename = std::to_string(id_article) + ".txt";	
 
-		cout << "Checks file: \n" << fs::current_path() / filename << endl;
-		if(fs::exists(fs::current_path() / filename)){
-			cout << "file exists!" << endl;	
-			cout << "Delete? (y/n) " << endl;
-			char opt;
-			cin >> opt;
-			if(opt == 'y'){
-				fs::remove(fs::current_path() / filename);
-				cout << "\nfile was removed!" << endl;	
-				break;	
-			} else {
-				cout << "\nNO file was removed!" << endl;		
-			}
-			
-		} else{
-			cout << "file does NOT exist!" << endl;		
-		}
-	} while (!fs::exists(fs::current_path() / filename));
-
-    
+	cout << "Checks file: \n" << fs::current_path() / filename << endl;
+/*
+	cout << "Delete? (y/n) " << endl;
+	char opt;
+	cin >> opt;
+	if(opt == 'y'){
+		fs::remove(fs::current_path() / filename);
+		cout << "\nfile was removed!" << endl;	
+		break;	
+	} else {
+		cout << "\nNO file was removed!" << endl;		
+	}
+*/
+	fs::remove(fs::current_path() / filename);
 	cout << "\nleave newsgroup: " << id_NG << endl;
 	//cout << fs::current_path() << endl;
 	fs::current_path(fs::current_path().parent_path());
 	cout << "Currently at \n" << fs::current_path() << endl;
-
+	
+	return true;
 }
 
 std::vector<std::string> DiskDatabase::get_article(int id_NG, int id_article){

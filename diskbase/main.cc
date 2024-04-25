@@ -89,26 +89,20 @@ int main(){
                 case 3:
 					{
                 	//go into correct newsgroup
-                	string ng = "fakeNG";
-                	fs::current_path(fs::current_path() / ng);
-                	
-                	std::fstream infoStream;
-                	infoStream.open(fs::current_path() / database.infoFile);
-					int n = -1;
-					infoStream >> n;
-					infoStream.close();
-
-                	cout << "number of articles: " << n << endl;
-					n += 1;
-
-					string name, author, text;
+           			string name, author, text;
+           			int id_NG;
+           			cout << "Input newsgroup id " << endl;
 					cout << "Input article name " << endl;
 					cin >> name;
 					cout << "Input author " << endl;
 					cin >> author;
 					cout << "Input text " << endl;	//fix so okay with multiline
 					cin >> text;
-					
+			
+                	string ng = std::to_string(id_NG);
+                	fs::current_path(fs::current_path() / ng);
+                	
+
                 	if(database.create_article(n, name, author, text)){
                 		cout << "Article was created!" << endl;
                 		cout << fs::current_path() << endl;
@@ -119,7 +113,7 @@ int main(){
                 		cout << "Article was NOT created!" << endl;
                 	}
 
-               		cout << "leave newsgroup: " << "fakeNG" << endl;
+               		cout << "leaving newsgroup: " << ng << endl;
 					cout << fs::current_path() << endl;
 					fs::current_path(fs::current_path().parent_path());
 					cout << "Currently at \n" << fs::current_path() << endl;
@@ -128,7 +122,12 @@ int main(){
 					 }       
 					 
                 case 4:
-                      //makeDir(th);
+                		int id_NG, id_article;
+           	     		cout << "Input newsgroup id and article id " << endl;
+       	     			cin >> id_NG;
+       	     			cin >> id_article;
+       	     			
+                      database.delete_article(id_NG, id_article);
                     break;
                 
                 case 5:
