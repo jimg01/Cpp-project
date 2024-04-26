@@ -41,8 +41,9 @@ bool DiskDatabase::create_article(int id_NG, std::string name, std::string autho
 	//go into correct newsgroup
 	string ng = std::to_string(id_NG);
 	if(!fs::exists(fs::current_path() / ng)){	//throw instead?
-		return false;
+		//throw std::runtime_error("no such newsgroup");
 		cout << "there is NO newsgroup " << ng << endl;
+		return false;
 	}
     fs::current_path(fs::current_path() / ng);
 
@@ -91,15 +92,16 @@ bool DiskDatabase::create_article(int id_NG, std::string name, std::string autho
 }
 
 bool DiskDatabase::delete_article(int id_NG, int id_article){
-	string filename;
 	string ng = std::to_string(id_NG);
-	filename = std::to_string(id_article) + ".txt";	
+	string filename = std::to_string(id_article) + ".txt";	
 	
 	//check is file exists
 	if(!fs::exists(fs::current_path() / ng)){
+		//throw std::runtime_error("no such newsgroup");
 		cout << "invalid newsgroup id!" << endl;
 		return false;	//throw instead?
 	} else if(!fs::exists(fs::current_path() / ng / filename) ){ 
+		//throw std::runtime_error("no such newsgroup");
 		cout << "invalid article id!" << endl;
 		return false;	//throw instead?
 	}
@@ -120,7 +122,47 @@ bool DiskDatabase::delete_article(int id_NG, int id_article){
 }
 
 std::vector<std::string> DiskDatabase::get_article(int id_NG, int id_article){
+	string ng = std::to_string(id_NG);
+	string filename = std::to_string(id_article) + ".txt";	
+	
+	//check is file exists
+	if(!fs::exists(fs::current_path() / ng)){
+		throw std::runtime_error("no such newsgroup");
+	//	cout << "invalid newsgroup id!" << endl;
+	//	return false;	//throw instead?
+	} else if(!fs::exists(fs::current_path() / ng / filename) ){ 
+		throw std::runtime_error("no such article");
+	//	cout << "invalid article id!" << endl;
+	//	return false;	//throw instead?
+	}
 
+	//go into corect newsgroup
+  	fs::current_path(fs::current_path() / ng);
+
+	//remove article
+	string name, author, line, text;
+	text = "";
+	cout << "Found file: \n" << fs::current_path() / filename << endl;
+	std::ifstream is(fs::current_path() / filename);
+	//is.open(fs::current_path() / filename);
+	getline(is, name);
+	getline(is, author);
+	do{
+		getline(is, line);	
+		cout << "Line \n" << line << endl;
+		text.append(line + "\n");
+	} while(!is.eof());
+
+	cout << "TEXT \n" << text << endl;
+	
+	std::vector<std::string> article{name, author, text};
+
+	//exit newsgroup
+	cout << "\nleave newsgroup: " << id_NG << endl;
+	fs::current_path(fs::current_path().parent_path());
+	cout << "Currently at \n" << fs::current_path() << endl;
+
+	return article;
 /*
 	try{
 		auto NG = news_groups.at(id_NG);

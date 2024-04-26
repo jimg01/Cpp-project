@@ -88,6 +88,7 @@ int main(){
                 
                 case 3:
 					{
+					cout << "\nCreate article:" << endl;
                 	//go into correct newsgroup
            			string name, author, text;
            			int id_NG;
@@ -112,18 +113,37 @@ int main(){
 					 }       
 					 
                 case 4:
+                	{
+                		cout << "\nDelete article:" << endl;
                 		int id_NG, id_article;
            	     		cout << "Input newsgroup id and article id " << endl;
        	     			cin >> id_NG;
        	     			cin >> id_article;
        	     			
-                      database.delete_article(id_NG, id_article);
+                      	database.delete_article(id_NG, id_article);
                     break;
-                
+                	}
                 case 5:
-                      //makeDir(th);
-                    break;
-                
+					{
+                		cout << "\nGet article:" << endl;
+	                    int id_NG, id_article;
+	                    cout << "Input newsgroup id and article id " << endl;
+	                    cin >> id_NG;
+	                    cin >> id_article;
+
+	                try{
+	                	std::vector<std::string> article = database.get_article(id_NG, id_article);
+	                	
+				    	for(int i = 0; i < 3; i++){
+						cout << article.at(i) << endl;
+						}
+	                }catch (std::runtime_error e){
+	                	cout << e.what() << endl;
+	                }    			
+	                    
+                      
+                    	break;
+               		}
                 case 6:
                       //makeDir(th);
                     break;
