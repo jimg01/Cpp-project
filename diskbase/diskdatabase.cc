@@ -12,9 +12,6 @@ using std::cin;
 using std::string;
 namespace fs = std::filesystem;
 
-//check if used!
-//const fs::path basePath = fs::current_path() / "testdirs";	
-
 DiskDatabase::DiskDatabase(){
 
     fs::path basePath = databaseDirectory;
@@ -65,9 +62,11 @@ bool DiskDatabase::create_NG(std::string name){
             }
         }
     }
+    
     int newNewsGroupId = readSize() + 1;
     fs::create_directory(std::to_string(newNewsGroupId));
     fs::current_path(std::to_string(newNewsGroupId));
+
     fileOutput.open(infoFile);
     fileOutput << 0 << "\n";
     fileOutput << name << "\n";
@@ -118,9 +117,7 @@ std::vector<std::pair<int, std::string>> DiskDatabase::list_articles(int id_NG){
 	} catch (fs::filesystem_error e){
 		throw std::runtime_error("no such newsgroup");
 	}
-	cout << "At : " << fs::current_path() << endl;
 	   	
-
 	return list;
 	
 }
@@ -147,20 +144,14 @@ bool DiskDatabase::create_article(int id_NG, std::string name, std::string autho
 
 	
     //Get index from NG info-file
-	int n = -1;
-    std::fstream infoStream;
-    infoStream.open(fs::current_path() / infoFile);    
-	infoStream >> n;
-	infoStream.close();
-//	cout << "number of articles: " << n << endl;
-	n += 1;
+	int n = readSize();
 
 	//make path for article
     const fs::path filePath = fs::current_path();
-    const string filename = std::to_string(n) + ".txt";
+    const string filename = std::to_string(++n) + ".txt";
+    
     if(fs::exists(filePath/filename)){	//will not happen probably
-    	cout << "this file id already exists " << filename << endl;
-    	return false;	//throw instead?
+    	throw std::runtime_error("this article already exist");
     }
 
 	//create and write to article
@@ -171,23 +162,18 @@ bool DiskDatabase::create_article(int id_NG, std::string name, std::string autho
 	os << text << endl;
     os.close();	
 
-    cout << "\nThe follwing file was created: " << endl 
-      		<< filePath/filename << endl;    
-
 	//update infoFile in newsgroup
-    cout << fs::current_path() << endl;
-    infoStream.open(fs::current_path() / infoFile);
+    std::fstream infoStream(fs::current_path() / infoFile);
     infoStream << std::to_string(n); // standard is overwrite mode
     infoStream.close();
 
 	//exit newsgroup
    	fs::current_path(fs::current_path().parent_path());
   	
-   
 	return true;	
 }
 
-bool DiskDatabase::delete_article(int id_NG, int id_article){
+bool DiskDatabase::delete_article(int id_NG, int id_article){ // make void?
 	string ng = std::to_string(id_NG);
 	string filename = std::to_string(id_article) + ".txt";	
 	
@@ -200,8 +186,6 @@ bool DiskDatabase::delete_article(int id_NG, int id_article){
 	//check is file exists
 	if(!fs::exists(fs::current_path() / filename) ){ 
 		throw std::runtime_error("no such newsgroup");
-		//cout << "invalid article id!" << endl;
-		//return false;	//throw instead?
 	}
 
 	//remove article
@@ -226,20 +210,19 @@ std::vector<std::string> DiskDatabase::get_article(int id_NG, int id_article){
 	//check if file exists
 	 if(!fs::exists(fs::current_path() / filename) ){ 
 		throw std::runtime_error("no such article");
-	//	cout << "invalid article id!" << endl;
-	//	return false;	//throw instead?
 	}
 
 	//remove article
 	string name, author, line, text;
 	text = "";
-	//cout << "Found file: \n" << fs::current_path() / filename << endl;
+	
 	std::ifstream is(fs::current_path() / filename);
 	getline(is, name);
 	getline(is, author);
 	do{
 		getline(is, line);	
 		text.append(line + "\n");
+		
 	} while(!is.eof());
 	
 	std::vector<std::string> article{name, author, text};
@@ -253,20 +236,20 @@ std::vector<std::string> DiskDatabase::get_article(int id_NG, int id_article){
 
 
 int DiskDatabase::readSize(){
-    std::ifstream fileInput;
-    fileInput.open(infoFile);
+    std::ifstream fileInput(infoFile);
     int size;
     fileInput >> size;
     fileInput.close();
+    
     return size;
 }
 
 std::string DiskDatabase::readName(){
-    std::ifstream fileInput;
-    fileInput.open(infoFile);
+    std::ifstream fileInput(infoFile);
     string name;
     getline(fileInput,name);
     getline(fileInput,name);
     fileInput.close();
+    
     return name;
 }
