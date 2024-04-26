@@ -46,13 +46,16 @@ bool InMemoryDatabase::delete_NG(int id_NG){
 std::vector<std::pair<int, std::string>> InMemoryDatabase::list_articles(int id_NG){
 	std::vector<std::pair<int, std::string>> list_of_articles{};
 	try{
-		auto NG = news_groups.at(id_NG);
-		std::map<int, Article> map_of_articles = NG.map_of_articles();
-		//for (const auto& [id, ng] : news_groups)
+		auto& NG = news_groups.at(id_NG);
+		const std::map<int, Article>& map_of_articles = NG.map_of_articles();
+		//std::cout << "the NAME is " << (*it).second.get_name() << std::endl;
+		//for (const auto& [id, art] : map_of_articles){
+		//	list_of_articles.push_back(std::make_pair(id, art.get_name()) );
 		for (auto it = map_of_articles.begin(); it != map_of_articles.end(); ++it){
+			std::cout << "the NAME is " << (*it).second.get_name() << std::endl;
 			list_of_articles.push_back(std::make_pair((*it).first, (*it).second.get_name()) );
 		}
-		std::cout << list_of_articles.size() << map_of_articles.size() << std::endl;
+		std::cout << "compare sizes" << list_of_articles.size() << ":"<< map_of_articles.size() << std::endl;
 	}
 	catch(const std::out_of_range& e){
 		//News group does not exist
@@ -62,10 +65,13 @@ std::vector<std::pair<int, std::string>> InMemoryDatabase::list_articles(int id_
 	return list_of_articles;
 }
 
-bool InMemoryDatabase::create_article(int id_NG, std::string name, std::string author, std::string text){
+bool InMemoryDatabase::create_article(int id_NG, std::string& name, std::string& author, std::string& text){
 	try{
-		auto NG = news_groups.at(id_NG); 
-		return NG.create_article(name, author, text);
+		auto& NG = news_groups.at(id_NG); 
+		std::cout << "beginning of daatabase createarticle has nr of articales " << NG.map_of_articles().size() << std::endl;
+		bool sucsess = NG.create_article(name, author, text);
+		std::cout << "end of daatabase createarticle has nr of articales " << NG.map_of_articles().size() << std::endl;
+		return sucsess;
 	}
 	catch(const std::out_of_range& e){
 		//News group does not exist
@@ -76,7 +82,7 @@ bool InMemoryDatabase::create_article(int id_NG, std::string name, std::string a
 
 void InMemoryDatabase::delete_article(int id_NG, int id_article){
 	try{
-		auto NG = news_groups.at(id_NG);
+		auto& NG = news_groups.at(id_NG);
 		try{
 			NG.delete_article(id_article);
 		}

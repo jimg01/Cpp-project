@@ -393,7 +393,7 @@ void Client::createArticle(MessageHandler& mess){
                     cout << "Text: " << articleText << endl;
                 }else if(answerCode == int(Protocol::ANS_NAK)){
                     if(mess.recvCode() == int(Protocol::ERR_NG_DOES_NOT_EXIST)){
-                        cout << "New NewsGroup not created." << endl;
+                        cout << "New Article not created." << endl;
                         cout << "Reason: NewsGroup (" << idOfNewsGroup << ") does not exists." << endl;
                     }else{
                         error(-1);

@@ -91,7 +91,8 @@ void writeNumber(const std::shared_ptr<Connection>& conn, int nbr)
 void writeString(const std::shared_ptr<Connection>& conn, const string& s)
 {
 	conn->write(char(Protocol::PAR_STRING));
-	writeInt(conn, s.length());
+	writeInt(conn, s.size());
+	std::cout << "the size is " << s.size() << std::endl;
     for (char c : s) {
         conn->write(c);
     }
@@ -226,11 +227,14 @@ void process_request(std::shared_ptr<Connection>& conn, Database_interface& data
     	conn->write(char(Protocol::ANS_LIST_ART));
     	try{
     		auto list_of_articles = database.list_articles(id);
+
     		conn->write(char(Protocol::ANS_ACK));
     		writeNumber(conn, list_of_articles.size());
 			for(auto it = list_of_articles.begin(); it != list_of_articles.end(); ++it){
 				writeNumber(conn, (*it).first);
 				writeString(conn, (*it).second);
+				std::cout << "the THINIG is " << (*it).second << std::endl;
+				std::cout << "the THINIG is " << (*it).second << std::endl;
 			}
     	} catch(const std::runtime_error& e){
     		conn->write(char(Protocol::ANS_NAK));

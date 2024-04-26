@@ -22,21 +22,24 @@ const std::string& NewsGroup::get_name() const{
 }
 
 const std::map<int, Article>& NewsGroup::map_of_articles() const{
-	std::cout << "to lister " << articles.size() << NG_next_free_index << std::endl;
-	return articles;	
+	//std::cout << "first name aaaaaaaaaaaaaaa " << articles.at(1).get_name() << std::endl << "))";
+	return articles;
 }
 
-bool NewsGroup::create_article(std::string title, std::string author, std::string text){	
+bool NewsGroup::create_article(std::string& title, std::string& author, std::string& text){	
+	//std::cout << "start of NG create art" << articles.size() << " : " << NG_next_free_index << std::endl;
 	articles.insert(std::make_pair(NG_next_free_index, Article(NG_next_free_index, title, author, text)));
-	std::cout << articles.size() << NG_next_free_index << std::endl;
-	++NG_next_free_index;
-	std::cout << "after" << articles.size() << NG_next_free_index << std::endl;
+	//std::cout << "first name AAAAAAAAAAAAAAAAAAA " << title << "< title, name >" << articles.at(NG_next_free_index).get_name() << std::endl << "))";
+	++(NG_next_free_index);
+	//std::cout << "end of NG create art" << articles.size() << " : " << NG_next_free_index << std::endl;
 	return true;
 }
 
 void NewsGroup::delete_article(int id){ //throws error if no such article exists
 	articles.at(id); //for out of range error
+	std::cout << "size before erase " << articles.size() << std::endl;
 	articles.erase(id);
+	std::cout << "size after erase " << articles.size() << std::endl;
 } 
 
 const Article NewsGroup::get_article(int id){ //throws error if no such article exists
