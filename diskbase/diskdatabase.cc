@@ -118,6 +118,8 @@ std::vector<std::pair<int, std::string>> DiskDatabase::list_articles(int id_NG){
 	} catch (fs::filesystem_error e){
 		throw std::runtime_error("no such newsgroup");
 	}
+	cout << "At : " << fs::current_path() << endl;
+	   	
 
 	return list;
 	
@@ -202,9 +204,6 @@ bool DiskDatabase::delete_article(int id_NG, int id_article){
 		//return false;	//throw instead?
 	}
 
-	//go into corect newsgroup
-  	fs::current_path(fs::current_path() / ng);
-
 	//remove article
 	cout << "Remove file: \n" << fs::current_path() / filename << endl;
 	fs::remove(fs::current_path() / filename);
@@ -231,24 +230,17 @@ std::vector<std::string> DiskDatabase::get_article(int id_NG, int id_article){
 	//	return false;	//throw instead?
 	}
 
-	//go into corect newsgroup
-  	fs::current_path(fs::current_path() / ng);
-
 	//remove article
 	string name, author, line, text;
 	text = "";
-	cout << "Found file: \n" << fs::current_path() / filename << endl;
+	//cout << "Found file: \n" << fs::current_path() / filename << endl;
 	std::ifstream is(fs::current_path() / filename);
-	//is.open(fs::current_path() / filename);
 	getline(is, name);
 	getline(is, author);
 	do{
 		getline(is, line);	
-		cout << "Line \n" << line << endl;
 		text.append(line + "\n");
 	} while(!is.eof());
-
-	cout << "TEXT \n" << text << endl;
 	
 	std::vector<std::string> article{name, author, text};
 
