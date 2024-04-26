@@ -92,31 +92,21 @@ int main(){
            			string name, author, text;
            			int id_NG;
            			cout << "Input newsgroup id " << endl;
+           			cin >> id_NG;
 					cout << "Input article name " << endl;
 					cin >> name;
 					cout << "Input author " << endl;
 					cin >> author;
 					cout << "Input text " << endl;	//fix so okay with multiline
-					cin >> text;
-			
-                	string ng = std::to_string(id_NG);
-                	fs::current_path(fs::current_path() / ng);
-                	
-
-                	if(database.create_article(n, name, author, text)){
+					cin >> text;	//multiword and line be fixed in server
+		
+                	if(database.create_article(id_NG, name, author, text)){
                 		cout << "Article was created!" << endl;
-                		cout << fs::current_path() << endl;
-                		infoStream.open(fs::current_path() / database.infoFile);
-                		infoStream << std::to_string(n);
-                		infoStream.close();
+                		
                 	} else{
                 		cout << "Article was NOT created!" << endl;
                 	}
 
-               		cout << "leaving newsgroup: " << ng << endl;
-					cout << fs::current_path() << endl;
-					fs::current_path(fs::current_path().parent_path());
-					cout << "Currently at \n" << fs::current_path() << endl;
 
                     break;
 					 }       

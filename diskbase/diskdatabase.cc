@@ -37,33 +37,55 @@ std::vector<std::pair<int, std::string>> DiskDatabase::list_articles(int id_NG){
 }
 
 bool DiskDatabase::create_article(int id_NG, std::string name, std::string author, std::string text){
-    //creation of file
+	
+	//go into correct newsgroup
+	string ng = std::to_string(id_NG);
+	if(!fs::exists(fs::current_path() / ng)){	//throw instead?
+		return false;
+		cout << "there is NO newsgroup " << ng << endl;
+	}
+    fs::current_path(fs::current_path() / ng);
 
-    std::fstream infoStream;
-    infoStream.open(fs::current_path() / database.infoFile);
-    
+	
+    //Get index from NG info-file
 	int n = -1;
+    std::fstream infoStream;
+    infoStream.open(fs::current_path() / infoFile);    
 	infoStream >> n;
 	infoStream.close();
-	cout << "number of articles: " << n << endl;
+//	cout << "number of articles: " << n << endl;
 	n += 1;
-	
-    const fs::path filePath = fs::current_path();
-    const string filename = std::to_string(id_NG) + ".txt";
-    if(fs::exists(filePath/filename)){	//will not happen probably
-    	return false;
-    }
-   
-    cout << "\nThe follwing file was created: " << endl 
-  		<< filePath/filename << endl;    
 
+	//make path for article
+    const fs::path filePath = fs::current_path();
+    const string filename = std::to_string(n) + ".txt";
+    if(fs::exists(filePath/filename)){	//will not happen probably
+    	cout << "this file id already exists " << filename << endl;
+    	return false;	//throw instead?
+    }
+
+	//create and write to article
    	std::ofstream{filePath/filename}; // create regular file
-   		
 	std::ofstream os(filePath/filename);
 	os << name << endl;
 	os << author << endl;
 	os << text << endl;
     os.close();	
+
+    cout << "\nThe follwing file was created: " << endl 
+      		<< filePath/filename << endl;    
+
+	//update infoFile in newsgroup
+    cout << fs::current_path() << endl;
+    infoStream.open(fs::current_path() / infoFile);
+    infoStream << std::to_string(n); // standard is overwrite mode
+    infoStream.close();
+
+	//exit newsgroup
+   	cout << "leaving newsgroup: " << ng << endl;
+   	cout << fs::current_path() << endl;
+   	fs::current_path(fs::current_path().parent_path());
+  	cout << "Currently at \n" << fs::current_path() << endl;
    
 	return true;	
 }
@@ -71,33 +93,26 @@ bool DiskDatabase::create_article(int id_NG, std::string name, std::string autho
 bool DiskDatabase::delete_article(int id_NG, int id_article){
 	string filename;
 	string ng = std::to_string(id_NG);
-	
-	//go into correct newsgroup!
-	if(!fs::exists(fs::current_path() / ng) || 
-		!fs::exists(fs::current_path() / ng / to_string(id_article)) ){ // or should throw?
-		return false;
-	}
- 	
-  	fs::current_path(fs::current_path() / ng);
-	
 	filename = std::to_string(id_article) + ".txt";	
-
-	cout << "Checks file: \n" << fs::current_path() / filename << endl;
-/*
-	cout << "Delete? (y/n) " << endl;
-	char opt;
-	cin >> opt;
-	if(opt == 'y'){
-		fs::remove(fs::current_path() / filename);
-		cout << "\nfile was removed!" << endl;	
-		break;	
-	} else {
-		cout << "\nNO file was removed!" << endl;		
+	
+	//check is file exists
+	if(!fs::exists(fs::current_path() / ng)){
+		cout << "invalid newsgroup id!" << endl;
+		return false;	//throw instead?
+	} else if(!fs::exists(fs::current_path() / ng / filename) ){ 
+		cout << "invalid article id!" << endl;
+		return false;	//throw instead?
 	}
-*/
+
+	//go into corect newsgroup
+  	fs::current_path(fs::current_path() / ng);
+
+	//remove article
+	cout << "Remove file: \n" << fs::current_path() / filename << endl;
 	fs::remove(fs::current_path() / filename);
+
+	//exit newsgroup
 	cout << "\nleave newsgroup: " << id_NG << endl;
-	//cout << fs::current_path() << endl;
 	fs::current_path(fs::current_path().parent_path());
 	cout << "Currently at \n" << fs::current_path() << endl;
 	
