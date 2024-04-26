@@ -34,21 +34,46 @@ bool DiskDatabase::delete_NG(int id_NG){
 
 std::vector<std::pair<int, std::string>> DiskDatabase::list_articles(int id_NG){
 
-		//check and go into correct newsgroup
-		if(!goto_NG(id_NG)){
-			throw std::runtime_error("no such newsgroup");
-		}
-		
+	std::vector<std::pair<int, std::string>> list;
+	try{
+		for (auto const& dir_entry : fs::directory_iterator(std::to_string(id_NG))){
+			string id = dir_entry.path().filename();
+			id = id.substr(0, id.length()-4);	//remove ".txt"
+			
+			string name;
+			std::ifstream is(dir_entry.path());
+			getline(is,name);
+			is.close();
+
+			//handle invalid files like "info.txt"
+			try{
+				std::pair<int, std::string> p(std::stoi(id), name);
+				list.push_back(p);	
+			} catch (std::invalid_argument e){
+				//just skip file
+			}
+			
+				
+		}		
+	} catch (fs::filesystem_error e){
+		throw std::runtime_error("no such newsgroup");
+	}
+
+	return list;
+	
 }
 
-bool DiskDatabase::goto_NG(int id_NG){ // assuming same level as NGs!s
+
+bool DiskDatabase::goto_NG(int id_NG){ // assuming same level as NGs!
 	//go into correct newsgroup
 	string ng = std::to_string(id_NG);
+	
 	if(!fs::exists(fs::current_path() / ng)){
-	//	cout << "there is NO newsgroup " << ng << endl;
 		return false;
 	}
+	
     fs::current_path(fs::current_path() / ng);
+    return true;
 }
 
 bool DiskDatabase::create_article(int id_NG, std::string name, std::string author, std::string text){

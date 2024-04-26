@@ -149,7 +149,25 @@ int main(){
                     	break;
                		}
                 case 6:
-                      //makeDir(th);
+                      {
+                   		cout << "\nList articles:" << endl;  	
+                   		int id_NG;
+	                    cout << "Input newsgroup id " << endl;
+	                    cin >> id_NG;
+
+	                    try{
+	                    	std::vector<std::pair<int, std::string>> articles = database.list_articles(id_NG);
+
+		                	cout << "\nPRINTING " << endl;	
+					    	for(long unsigned int i = 0; i < articles.size(); i++){
+								cout << articles.at(i).first << " " 
+									<< articles.at(i).second << endl;
+							}
+							
+                   	  	}catch (std::runtime_error e){
+   	                		cout << e.what() << endl;
+   	                	}
+                      }
                     break;
                 
                 case 7:
