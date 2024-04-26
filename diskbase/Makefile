@@ -27,6 +27,7 @@ LDFLAGS   = -g -L../lib
 #LDLIBS = -lclientserver
 
 # Targets
+
 PROGS = main #test d_database #diskdatabase d_database
 
 all: $(PROGS)
@@ -34,7 +35,7 @@ all: $(PROGS)
 # Targets rely on implicit rules for compiling and linking
 # The dependency on libclientserver.a is not defined.
 
-diskdatabase: diskdatabase.o txthandler.o
+main: main.o diskdatabase.o 
 d_database: d_database.o txthandler.o
 test: test.o
 main: main.o diskdatabase.o

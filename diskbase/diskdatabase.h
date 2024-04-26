@@ -16,14 +16,18 @@ public:
 	virtual bool create_article(int id_NG, std::string name, std::string author, std::string text) override;
 	virtual bool delete_article(int id_NG, int id_article) override;
 	virtual std::vector<std::string> get_article(int id_NG, int id_article) override;
+
+	const std::string infoFile = "info.txt";
 private:
-	std::string const infoFile = "info.txt";
+	//const std::string infoFile = "info.txt";
     std::string const databaseDirectory = "database";
 
     int readSize();
     std::string readName();
 
-	int next_free_index;
+	int next_free_index;	// is this used??
+	bool goto_NG(int id_NG);
+	
 };
 
 #endif

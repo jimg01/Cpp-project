@@ -3,7 +3,6 @@
 #include<cstdlib>
 #include<filesystem>
 #include<fstream>
-
 #include"diskdatabase.h"
 #include"database_interface.h"
 
@@ -27,10 +26,9 @@ void showNewsGroups(DiskDatabase& ddb){
     }
 }
 
+
 void createNewsGroup(DiskDatabase& ddb){
-
     std::ofstream str;
-
 
     cout << "Insert name of new NewsGroup: ";
     string userInput;
@@ -42,6 +40,7 @@ void createNewsGroup(DiskDatabase& ddb){
         cout << "Newsgroup already exists" << endl;
     }       
 }
+
 
 void deleteNewsGroup(DiskDatabase& ddb){
 
@@ -63,101 +62,87 @@ void deleteNewsGroup(DiskDatabase& ddb){
     }
 }
 
-// void makeFile(){
+void listArticles(DiskDatabase& ddb){
+	cout << "\nList articles:" << endl;  	
+	int id_NG;
+    cout << "Input newsgroup id " << endl;
+    cin >> id_NG;
 
+    try{
+	   	std::vector<std::pair<int, std::string>> articles = ddb.list_articles(id_NG);
 
-//     cout << "Insert name of new file: ";
-//     string nameOfDir;
-//     getline(cin, nameOfDir);
+       	cout << "\nPRINTING " << endl;	
+	   	for(long unsigned int i = 0; i < articles.size(); i++){
+			cout << articles.at(i).first << " " 
+				<< articles.at(i).second << endl;
+		}
 
-//     cout << "Insert name of new file: ";
-//     string userInput;
-//     getline(cin, userInput);
-// }
+  	}catch (std::runtime_error e){
+   		cout << e.what() << endl;
+	}
+}
 
-// void createArticle(TxTHandler& th){
-// 	//string basePath = fs::current_path() + "/testdirs";	//go down to correct
-// 	string ng = "fakeNG";
-// 	cout << "enter newsgroup: " << ng << endl;
-// 	fs::current_path(basePath / ng);
-// 	cout << "Currently at \n" << fs::current_path() << endl;
-
-// 	/*
-//     cout << "Insert name of new file: ";
-//     string nameOfDir;
-//     getline(cin, nameOfDir);
-// 	*/
+void createArticle(DiskDatabase& ddb){
+	cout << "\nCreate article:" << endl;
 	
-//     cout << "Insert name of new file: ";
-//     string userInput;
-//     getline(cin, userInput);
-//     std::fstream fstream;
+	string name, author, text;
+	int id_NG;
+	cout << "Input newsgroup id " << endl;
+	cin >> id_NG;
+	cout << "Input article name " << endl;
+	cin >> name;
+	cout << "Input author " << endl;
+	cin >> author;
+	cout << "Input text " << endl;	//fix so okay with multiline
+	cin >> text;	//multiword and line be fixed in server
 
-//     //creation of file
-//     const fs::path filePath = fs::current_path();
-//     const string filename = userInput + ".txt";
-//     std::ofstream{filePath/filename}; // create regular file
-    
-//     cout << "\nThe follwing file was created: " << endl 
-//     		<< filePath/filename << endl;    
+	try{
+		ddb.create_article(id_NG, name, author, text);	
+		
+	}catch (std::runtime_error e){
+   		cout << e.what() << endl;
+   	}
+ 
+}
 
-// 	cout << "leave newsgroup: " << ng << endl;
-// 	cout << fs::current_path() << endl;
-// 	fs::current_path(fs::current_path().parent_path());
-// 	cout << "Currently at \n" << fs::current_path() << endl;
-// }
+void deleteArticle(DiskDatabase& ddb){
+	cout << "\nDelete article:" << endl;
 
-// void deleteArticle(TxTHandler& th){
+	int id_NG, id_article;
+	cout << "Input newsgroup id and article id " << endl;
+	cin >> id_NG;
+	cin >> id_article;
 
-// 	string ng = "fakeNG";
-// 	cout << "\nenter newsgroup: " << ng << endl;
-// 	fs::current_path(basePath / ng);
-// 	cout << "Currently at \n" << fs::current_path() << endl;
+	try{
+   		ddb.delete_article(id_NG, id_article);
+   		
+  	}catch (std::runtime_error e){
+		cout << e.what() << endl;
+	}
+ 
+}
 
-// 	string filename;
-	
-// 	do{
-// 		cout << "Insert name of to be deleted article: " << endl;
-// 	    getline(cin, filename);
-// 		filename = filename + ".txt";	
 
-// 		cout << "Checks file: \n" << fs::current_path() / filename << endl;
-// 		if(fs::exists(fs::current_path() / filename)){
-// 			cout << "file exists!" << endl;	
-// 			cout << "Delete? (y/n) " << endl;
-// 			char opt;
-// 			cin >> opt;
-// 			if(opt == 'y'){
-// 				fs::remove(fs::current_path() / filename);
-// 				cout << "\nfile was removed!" << endl;	
-// 				break;	
-// 			} else {
-// 				cout << "\nNO file was removed!" << endl;		
-// 			}
-			
-// 		} else{
-// 			cout << "file does NOT exist!" << endl;		
-// 		}
-// 	} while (!fs::exists(fs::current_path() / filename));
+void getArticle(DiskDatabase& ddb){
+	cout << "\nGet article:" << endl;
+    int id_NG, id_article;
+    cout << "Input newsgroup id and article id " << endl;
+    cin >> id_NG;
+    cin >> id_article;
 
-    
-// 	cout << "\nleave newsgroup: " << ng << endl;
-// 	//cout << fs::current_path() << endl;
-// 	fs::current_path(fs::current_path().parent_path());
-// 	cout << "Currently at \n" << fs::current_path() << endl;
-	
-	
-// 	/*
-//     cout << "Insert name of new file: ";
-//     string userInput;
-//     getline(cin, userInput);
-//     std::fstream fstream;
-//     string filePath = fs::current_path().string() + "/" +  userInput + ".txt";
+    try{
+      	std::vector<std::string> article = ddb.get_article(id_NG, id_article);
+      	
+		for(int i = 0; i < 3; i++){
+			cout << article.at(i) << endl;
+		}
+		
+     } catch (std::runtime_error e){
+      	cout << e.what() << endl;
+     }    			
 
-// 	string command = "touch " + filePath;
-//     std::system(command.c_str());
-//     */
-// }
+}
+
 
 bool makeDesition(int n, DiskDatabase& ddb){
     switch (n) 
@@ -176,19 +161,19 @@ bool makeDesition(int n, DiskDatabase& ddb){
             break;
 
         case 4:
-            
+            listArticles(ddb);
             break;
         
         case 5:
-            
+            createArticle(ddb);
             break;
         
         case 6:
-            
+            deleteArticle(ddb);
             break;
         
         case 7:
-            
+            getArticle(ddb);
             break;
         
         case 8:
@@ -228,7 +213,9 @@ int main(){
 
         if(cin >> userInput && cin.peek() == '\n'){
             cin.ignore();
+
             whileCheck = makeDesition(userInput, ddb);
+
         }else {
             cout << "Invalid Input!" << endl;
             cin.clear();
