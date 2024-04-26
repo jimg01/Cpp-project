@@ -20,6 +20,7 @@ public:
 	const std::string infoFile = "info.txt";
 private:
 	//std::map<int, NewsGroup> news_groups;
+	bool goto_NG(int id_NG);
 	
 };
 

@@ -88,28 +88,27 @@ int main(){
                 
                 case 3:
 					{
-					cout << "\nCreate article:" << endl;
-                	//go into correct newsgroup
-           			string name, author, text;
-           			int id_NG;
-           			cout << "Input newsgroup id " << endl;
-           			cin >> id_NG;
-					cout << "Input article name " << endl;
-					cin >> name;
-					cout << "Input author " << endl;
-					cin >> author;
-					cout << "Input text " << endl;	//fix so okay with multiline
-					cin >> text;	//multiword and line be fixed in server
-		
-                	if(database.create_article(id_NG, name, author, text)){
-                		cout << "Article was created!" << endl;
-                		
-                	} else{
-                		cout << "Article was NOT created!" << endl;
-                	}
-
-
-                    break;
+						cout << "\nCreate article:" << endl;
+	                	//go into correct newsgroup
+	           			string name, author, text;
+	           			int id_NG;
+	           			cout << "Input newsgroup id " << endl;
+	           			cin >> id_NG;
+						cout << "Input article name " << endl;
+						cin >> name;
+						cout << "Input author " << endl;
+						cin >> author;
+						cout << "Input text " << endl;	//fix so okay with multiline
+						cin >> text;	//multiword and line be fixed in server
+			
+						try{
+							database.create_article(id_NG, name, author, text);	
+						}catch (std::runtime_error e){
+	                		cout << e.what() << endl;
+	                	}
+	               	
+	                    break;
+	                    
 					 }       
 					 
                 case 4:
@@ -119,8 +118,13 @@ int main(){
            	     		cout << "Input newsgroup id and article id " << endl;
        	     			cin >> id_NG;
        	     			cin >> id_article;
-       	     			
-                      	database.delete_article(id_NG, id_article);
+
+       	     			try{
+                      		database.delete_article(id_NG, id_article);
+                   	  	}catch (std::runtime_error e){
+	                		cout << e.what() << endl;
+	                	}
+	              
                     break;
                 	}
                 case 5:

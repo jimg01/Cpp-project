@@ -33,19 +33,30 @@ bool DiskDatabase::delete_NG(int id_NG){
 }
 
 std::vector<std::pair<int, std::string>> DiskDatabase::list_articles(int id_NG){
-	
+
+		//check and go into correct newsgroup
+		if(!goto_NG(id_NG)){
+			throw std::runtime_error("no such newsgroup");
+		}
+		
+}
+
+bool DiskDatabase::goto_NG(int id_NG){ // assuming same level as NGs!s
+	//go into correct newsgroup
+	string ng = std::to_string(id_NG);
+	if(!fs::exists(fs::current_path() / ng)){
+	//	cout << "there is NO newsgroup " << ng << endl;
+		return false;
+	}
+    fs::current_path(fs::current_path() / ng);
 }
 
 bool DiskDatabase::create_article(int id_NG, std::string name, std::string author, std::string text){
 	
-	//go into correct newsgroup
-	string ng = std::to_string(id_NG);
-	if(!fs::exists(fs::current_path() / ng)){	//throw instead?
-		//throw std::runtime_error("no such newsgroup");
-		cout << "there is NO newsgroup " << ng << endl;
-		return false;
+	//check and go into correct newsgroup
+	if(!goto_NG(id_NG)){
+		throw std::runtime_error("no such newsgroup");
 	}
-    fs::current_path(fs::current_path() / ng);
 
 	
     //Get index from NG info-file
@@ -83,10 +94,8 @@ bool DiskDatabase::create_article(int id_NG, std::string name, std::string autho
     infoStream.close();
 
 	//exit newsgroup
-   	cout << "leaving newsgroup: " << ng << endl;
-   	cout << fs::current_path() << endl;
    	fs::current_path(fs::current_path().parent_path());
-  	cout << "Currently at \n" << fs::current_path() << endl;
+  	
    
 	return true;	
 }
@@ -95,15 +104,17 @@ bool DiskDatabase::delete_article(int id_NG, int id_article){
 	string ng = std::to_string(id_NG);
 	string filename = std::to_string(id_article) + ".txt";	
 	
+	
+	//check and go into correct newsgroup
+	if(!goto_NG(id_NG)){
+		throw std::runtime_error("no such newsgroup");
+	}
+	
 	//check is file exists
-	if(!fs::exists(fs::current_path() / ng)){
-		//throw std::runtime_error("no such newsgroup");
-		cout << "invalid newsgroup id!" << endl;
-		return false;	//throw instead?
-	} else if(!fs::exists(fs::current_path() / ng / filename) ){ 
-		//throw std::runtime_error("no such newsgroup");
-		cout << "invalid article id!" << endl;
-		return false;	//throw instead?
+	if(!fs::exists(fs::current_path() / filename) ){ 
+		throw std::runtime_error("no such newsgroup");
+		//cout << "invalid article id!" << endl;
+		//return false;	//throw instead?
 	}
 
 	//go into corect newsgroup
@@ -114,9 +125,7 @@ bool DiskDatabase::delete_article(int id_NG, int id_article){
 	fs::remove(fs::current_path() / filename);
 
 	//exit newsgroup
-	cout << "\nleave newsgroup: " << id_NG << endl;
-	fs::current_path(fs::current_path().parent_path());
-	cout << "Currently at \n" << fs::current_path() << endl;
+   	fs::current_path(fs::current_path().parent_path());
 	
 	return true;
 }
@@ -125,12 +134,13 @@ std::vector<std::string> DiskDatabase::get_article(int id_NG, int id_article){
 	string ng = std::to_string(id_NG);
 	string filename = std::to_string(id_article) + ".txt";	
 	
-	//check is file exists
-	if(!fs::exists(fs::current_path() / ng)){
+	//check and go into correct newsgroup
+	if(!goto_NG(id_NG)){
 		throw std::runtime_error("no such newsgroup");
-	//	cout << "invalid newsgroup id!" << endl;
-	//	return false;	//throw instead?
-	} else if(!fs::exists(fs::current_path() / ng / filename) ){ 
+	}
+	
+	//check if file exists
+	 if(!fs::exists(fs::current_path() / filename) ){ 
 		throw std::runtime_error("no such article");
 	//	cout << "invalid article id!" << endl;
 	//	return false;	//throw instead?
@@ -158,9 +168,7 @@ std::vector<std::string> DiskDatabase::get_article(int id_NG, int id_article){
 	std::vector<std::string> article{name, author, text};
 
 	//exit newsgroup
-	cout << "\nleave newsgroup: " << id_NG << endl;
-	fs::current_path(fs::current_path().parent_path());
-	cout << "Currently at \n" << fs::current_path() << endl;
+   	fs::current_path(fs::current_path().parent_path());
 
 	return article;
 /*
