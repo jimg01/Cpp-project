@@ -82,7 +82,6 @@ void writeNumber(const std::shared_ptr<Connection>& conn, int nbr)
 	conn->write(char(Protocol::PAR_NUM));
 
 	writeInt(conn, nbr);
-	std::cout << "sent num-p " << nbr << std::endl;
 }
 
 /*
@@ -93,11 +92,9 @@ void writeString(const std::shared_ptr<Connection>& conn, const string& s)
 {
 	conn->write(char(Protocol::PAR_STRING));
 	writeInt(conn, s.size());
-	std::cout << "the size is " << s.size() << std::endl;
     for (char c : s) {
         conn->write(c);
     }
-    std::cout << "sent string_p " << s << std::endl;
 }
 
 Server init(int argc, char* argv[])
@@ -124,21 +121,8 @@ Server init(int argc, char* argv[])
 }
 
 void process_request(std::shared_ptr<Connection>& conn, Database_interface& database){
-    /*
-    int    nbr = readNumber(conn);
-    string result;
-    if (nbr > 0) {
-            result = "positive";
-    } else if (nbr == 0) {
-            result = "zero";
-    } else {
-            result = "negative";
-    }
-    writeString(conn, result);
-    */
-	
-	int nbr = conn->read();
-	std::cout << "case read"<< nbr  << " " << int(char(Protocol::COM_CREATE_NG)) << std::endl;
+	char nbr = conn->read();
+	//std::cout << "case read"<< nbr  << " " << int(char(Protocol::COM_CREATE_NG)) << std::endl;
 	// switch case för vilket command det är
 	switch(nbr){
 	case char(Protocol::COM_LIST_NG):{
@@ -146,26 +130,20 @@ void process_request(std::shared_ptr<Connection>& conn, Database_interface& data
 		COM_LIST_NG COM_END
 		ANS_LIST_NG num_p [num_p string_p]* ANS_END
 		*/
-		std::cout << "case entered" << std::endl;
+		
 		if (conn->read() == char(Protocol::COM_END)){
 			auto list_of_newsgroups = database.list_NG();
 			conn->write(char(Protocol::ANS_LIST_NG));
-			std::cout << "ans sent" << std::endl;
 			writeNumber(conn, list_of_newsgroups.size());
-			std::cout << "num-p sent " << list_of_newsgroups.size() << std::endl;
 			for(auto it = list_of_newsgroups.begin(); it != list_of_newsgroups.end(); ++it){
 				writeNumber(conn, (*it).first);
-				std::cout << "num_p sent" << (*it).first << std::endl;
 				writeString(conn, (*it).second);
-				std::cout << "string_p sent" << (*it).second << std::endl;
 			}
 			conn->write(char(Protocol::ANS_END));
-			std::cout << "end sent" << std::endl;
 		} else{
 			//throw some error
-			std::cerr << "some error" << std::endl;
-			ProtocolViolationException e;
-			throw (e);
+			std::cerr << "Protocol violation in list NGs" << std::endl;
+			conn->write(char(Protocol::ANS_END));
 		}
 		break;
 	}
@@ -174,25 +152,21 @@ void process_request(std::shared_ptr<Connection>& conn, Database_interface& data
 		COM_CREATE_NG string_p COM_END
 		ANS_CREATE_NG [ANS_ACK | ANS_NAK ERR_NG_ALREADY_EXISTS] ANS_END
 		*/
-		std::cout << "case entered" << std::endl;
 		bool success = database.create_NG(readString(conn));
 		if (conn->read() != int(char(Protocol::COM_END))){
 			//Throw error;
-			std::cerr << "some error" << std::endl;
-			ProtocolViolationException e;
-			throw (e);
+			std::cerr << "Protocol violation in create NG" << std::endl;
+			conn->write(char(Protocol::ANS_END));
 		}
 		conn->write(char(Protocol::ANS_CREATE_NG));
-		std::cout << "ans sent" << std::endl;
 		if(success == true){
 			conn->write(char(Protocol::ANS_ACK));
-			std::cout << "ack sent" << std::endl;
 		} else{
 			conn->write(char(Protocol::ANS_NAK));
 			conn->write(char(Protocol::ERR_NG_ALREADY_EXISTS));
 		}
 		conn->write(char(Protocol::ANS_END));
-		std::cout << "end sent" << std::endl;
+
 		break;
 	}
     case char(Protocol::COM_DELETE_NG):{
@@ -200,26 +174,22 @@ void process_request(std::shared_ptr<Connection>& conn, Database_interface& data
 		COM_DELETE_NG num_p COM_END
 		ANS_DELETE_NG [ANS_ACK | ANS_NAK ERR_NG_DOES_NOT_EXIST] ANS_END
     	*/ 
-    	std::cout << "case entered" << std::endl;
+
     	int id = readNumber(conn);
     	if (conn->read() != char(Protocol::COM_END)){
     		//Throw error
-    		std::cerr << "some error" << std::endl;
-    		ProtocolViolationException e;
-			throw (e);
+    		std::cerr << "Protocol violation in delete NG" << std::endl;
+			conn->write(char(Protocol::ANS_END));
     	} else {
 	    	bool success = database.delete_NG(id);
 	    	conn->write(char(Protocol::ANS_DELETE_NG));
-	    	std::cout << "ans sent" << std::endl;
 	    	if(success == true){
 	    		conn->write(char(Protocol::ANS_ACK));
-	    		std::cout << "ack sent" << std::endl;
 	    	} else{
 	    		conn->write(char(Protocol::ANS_NAK));
 	    		conn->write(char(Protocol::ERR_NG_DOES_NOT_EXIST));
 	    	}
 	    	conn->write(char(Protocol::ANS_END));
-	    	std::cout << "end sent" << std::endl;
 	    }
     	break;
     }
@@ -228,12 +198,12 @@ void process_request(std::shared_ptr<Connection>& conn, Database_interface& data
 		COM_LIST_ART num_p COM_END
 		ANS_LIST_ART [ANS_ACK num_p [num_p string_p]* | ANS_NAK ERR_NG_DOES_NOT_EXIST] ANS_END
     	*/
+
     	int id = readNumber(conn);
     	if (conn->read() != char(Protocol::COM_END)){
     		//Throw error
-    		std::cerr << "some error" << std::endl;
-    		ProtocolViolationException e;
-			throw (e);
+    		std::cerr << "Protocol violation in list articles" << std::endl;
+			conn->write(char(Protocol::ANS_END));
     	} else {
 	    	conn->write(char(Protocol::ANS_LIST_ART));
 	    	try{
@@ -244,8 +214,6 @@ void process_request(std::shared_ptr<Connection>& conn, Database_interface& data
 				for(auto it = list_of_articles.begin(); it != list_of_articles.end(); ++it){
 					writeNumber(conn, (*it).first);
 					writeString(conn, (*it).second);
-					std::cout << "the THINIG is " << (*it).second << std::endl;
-					std::cout << "the THINIG is " << (*it).second << std::endl;
 				}
 	    	} catch(const std::runtime_error& e){
 	    		conn->write(char(Protocol::ANS_NAK));
@@ -260,15 +228,15 @@ void process_request(std::shared_ptr<Connection>& conn, Database_interface& data
 		COM_CREATE_ART num_p string_p string_p string_p COM_END
 		ANS_CREATE_ART [ANS_ACK | ANS_NAK ERR_NG_DOES_NOT_EXIST] ANS_END
     	*/
+
     	int id_NG = readNumber(conn);
     	std::string title = readString(conn);
     	std::string author = readString(conn);
     	std::string text = readString(conn);
     	if (conn->read() != char(Protocol::COM_END)){
     		//throw error
-    		std::cerr << "some error" << std::endl;
-    		ProtocolViolationException e;
-			throw (e);
+    		std::cerr << "Protocol violation in create article" << std::endl;
+			conn->write(char(Protocol::ANS_END));
     	} else{
 	    	bool success = database.create_article(id_NG, title, author, text);
 	    	conn->write(char(Protocol::ANS_CREATE_ART));
@@ -287,13 +255,13 @@ void process_request(std::shared_ptr<Connection>& conn, Database_interface& data
 		COM_DELETE_ART num_p num_p COM_END
 		ANS_DELETE_ART [ANS_ACK | ANS_NAK [ERR_NG_DOES_NOT_EXIST | ERR_ART_DOES_NOT_EXIST]] ANS_END
     	*/
+
     	int id_NG = readNumber(conn);
     	int id_art = readNumber(conn);
     	if (conn->read() != char(Protocol::COM_END)){
     		//throw error
-    		std::cerr << "some error" << std::endl;
-    		ProtocolViolationException e;
-			throw (e);
+    		std::cerr << "Protocol violation in delete article" << std::endl;
+			conn->write(char(Protocol::ANS_END));
     	} else {
 	    	conn->write(char(Protocol::ANS_DELETE_ART));
 	    	try{
@@ -320,13 +288,13 @@ void process_request(std::shared_ptr<Connection>& conn, Database_interface& data
 		COM_GET_ART num_p num_p COM_END
 		ANS_GET_ART [ANS_ACK string_p string_p string_p | ANS_NAK [ERR_NG_DOES_NOT_EXIST | ERR_ART_DOES_NOT_EXIST]] ANS_END
     	*/
+
     	int id_NG = readNumber(conn);
     	int id_art = readNumber(conn);
     	if (conn->read() != char(Protocol::COM_END)){
     		//throw error
-    		std::cerr << "some error" << std::endl;
-    		ProtocolViolationException e;
-			throw (e);
+    		std::cerr << "Protocol violation in get article" << std::endl;
+			conn->write(char(Protocol::ANS_END));
     	} else {
 	    	conn->write(char(Protocol::ANS_GET_ART));
 	    	try{
@@ -350,9 +318,8 @@ void process_request(std::shared_ptr<Connection>& conn, Database_interface& data
     }
     case char(Protocol::COM_END):{
     	//throw some error
-    	std::cerr << "some error" << std::endl;
-    	ProtocolViolationException e;
-		throw (e);
+    	std::cerr << "recieved unexpected COM_END" << std::endl;
+		conn->write(char(Protocol::ANS_END));
     	break;
     }
 	default:{
