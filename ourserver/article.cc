@@ -26,8 +26,6 @@ Article::Article(int ind, std::string& titl, std::string& auth, std::string& txt
 }*/
 
 const std::string& Article::get_name() const{
-	std::cout << "MY NAME IS " << title << std::endl;
-
 	return title;
 }
 

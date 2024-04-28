@@ -8,7 +8,6 @@ NewsGroup::NewsGroup(int& ind, std::string& n){
 	name = n;
 	articles = std::map<int, Article>();	
 	NG_next_free_index = 1;
-	std::cout << "inisitannized a ng" << articles.size() << NG_next_free_index << std::endl;
 }
 
 NewsGroup::~NewsGroup(){}
@@ -37,9 +36,7 @@ bool NewsGroup::create_article(std::string& title, std::string& author, std::str
 
 void NewsGroup::delete_article(int id){ //throws error if no such article exists
 	articles.at(id); //for out of range error
-	std::cout << "size before erase " << articles.size() << std::endl;
 	articles.erase(id);
-	std::cout << "size after erase " << articles.size() << std::endl;
 } 
 
 const Article NewsGroup::get_article(int id){ //throws error if no such article exists
