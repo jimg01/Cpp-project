@@ -11,7 +11,7 @@ class Client{
     Client();
     //~Client();
     MessageHandler init(const int, char*[]);
-    int application(MessageHandler);
+    int application(MessageHandler&);
     int getPort();
 
     private:

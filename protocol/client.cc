@@ -4,6 +4,7 @@
 #include<limits>
 
 #include"client.h"
+#include"connection.h"
 
 using std::string;
 using std::cin;
@@ -41,7 +42,7 @@ MessageHandler Client::init(const int argc, char* argv[]){
 
 int Client::getPort(){return port;}
 
-int Client::application(MessageHandler mess){
+int Client::application(MessageHandler& mess){
 	cout << "APPL: Mess connected? " << mess.isConnected() << endl;
     int userInput = -1;
     bool InputCheck = true;
@@ -199,6 +200,7 @@ void Client::listNewsGroups(MessageHandler& mess){
     }
     
 }
+
 void Client::createNewsGroups(MessageHandler& mess){ 
     bool inputCheck = true;
     string nameOfNewsGroup;
@@ -244,6 +246,7 @@ void Client::createNewsGroups(MessageHandler& mess){
     }
     
 }
+
 void Client::deleteNewsGroups(MessageHandler& mess){ 
 
     cout << "Enter Id of the NewsGroup you want to delete: ";
@@ -284,6 +287,7 @@ void Client::deleteNewsGroups(MessageHandler& mess){
     }
     
 }
+
 void Client::listArticle(MessageHandler& mess){ 
 
     cout << "Enter Id of the NewsGroup to get the list of Articles: ";
@@ -332,6 +336,7 @@ void Client::listArticle(MessageHandler& mess){
     }
     
 }
+
 void Client::createArticle(MessageHandler& mess){
 
     cout << "Enter Id of NewsGroup where Article should be created: ";
@@ -415,6 +420,7 @@ void Client::createArticle(MessageHandler& mess){
     }
 
 }
+
 void Client::deleteArticle(MessageHandler& mess){ 
 
     cout << "Enter Id of NewsGroup where Article should be deleted: ";
@@ -469,6 +475,7 @@ void Client::deleteArticle(MessageHandler& mess){
         cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     }
 }
+
 void Client::showArticle(MessageHandler& mess){
 
     cout << "Enter Id of NewsGroup where Article is: ";
@@ -544,5 +551,5 @@ int main(int argc, char* argv[]){
     MessageHandler mess = userClient.init(argc,argv);
     //cout << "MAIN: Mess connected? " << int(mess.isConnected()) << endl;
 
-    return userClient.application(move(mess));
+    return userClient.application(mess);
 }

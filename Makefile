@@ -26,6 +26,7 @@ all: lib/libclientserver.a
 	make -C example
 	make -C protocol
 	make -C ourserver
+	make -C diskbase
 
 # Create the library; ranlib is for Darwin (OS X) and maybe other systems.
 # Doesn't seem to do any damage on other systems.
@@ -50,6 +51,7 @@ distclean: clean
 	-rm $(SRC:.cc=.d) 
 	make -C example distclean
 	make -C protocol distclean
+	make -C diskbase distclean
 
 
 # Include the *.d files
