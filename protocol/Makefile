@@ -13,7 +13,7 @@ DEPFLAGS = -MT $@ -MMD -MP -MF $*.d
 
 CPPFLAGS  = -I../include
 CXXFLAGS =  -O2 -Wall -Wextra -pedantic-errors -Wold-style-cast
-CXXFLAGS += -std=c++11
+CXXFLAGS += -std=c++17
 CXXFLAGS += -g
 CXXFLAGS += $(DEPFLAGS)
 LDFLAGS   = -g -L../lib
@@ -34,8 +34,8 @@ all: $(PROGS)
 # Targets rely on implicit rules for compiling and linking
 # The dependency on libclientserver.a is not defined.
 
-client: client.o messagehandler.o 
-testHandler: testHandler.o messagehandler.o 
+client: client.o
+testHandler: testHandler.o
 
 SRC = $(wildcard *.cc)
 
