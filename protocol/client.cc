@@ -299,11 +299,11 @@ void Client::listArticle(MessageHandler& mess){
             if(mess.recvCode() == int(Protocol::ANS_LIST_ART)){
                 int answerCode = mess.recvCode();
                 if(answerCode == int(Protocol::ANS_ACK)){
-                    int n = mess.recvInt();
+                    int n = mess.recvIntParameter();
                     if(n != 0){
                         cout << "Id : Name" << endl;
                         for(int i = 0; i < n; i++){
-                            cout << mess.recvInt() << " : " << mess.recvStringParameter() << endl;
+                            cout << mess.recvIntParameter() << " : " << mess.recvStringParameter() << endl;
                         }
                     }else {
                         cout << "No Articles exists" << endl;
