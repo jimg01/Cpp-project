@@ -5,6 +5,7 @@
 #include "database_interface.h"
 #include "inmemorydatabase.h"
 #include "protocol.h"
+#include "protocolviolationexception.h"
 
 #include <cstdlib>
 #include <iostream>
@@ -163,6 +164,8 @@ void process_request(std::shared_ptr<Connection>& conn, Database_interface& data
 		} else{
 			//throw some error
 			std::cerr << "some error" << std::endl;
+			ProtocolViolationException e;
+			throw (e);
 		}
 		break;
 	}
@@ -176,6 +179,8 @@ void process_request(std::shared_ptr<Connection>& conn, Database_interface& data
 		if (conn->read() != int(char(Protocol::COM_END))){
 			//Throw error;
 			std::cerr << "some error" << std::endl;
+			ProtocolViolationException e;
+			throw (e);
 		}
 		conn->write(char(Protocol::ANS_CREATE_NG));
 		std::cout << "ans sent" << std::endl;
@@ -200,19 +205,22 @@ void process_request(std::shared_ptr<Connection>& conn, Database_interface& data
     	if (conn->read() != char(Protocol::COM_END)){
     		//Throw error
     		std::cerr << "some error" << std::endl;
-    	}
-    	bool success = database.delete_NG(id);
-    	conn->write(char(Protocol::ANS_DELETE_NG));
-    	std::cout << "ans sent" << std::endl;
-    	if(success == true){
-    		conn->write(char(Protocol::ANS_ACK));
-    		std::cout << "ack sent" << std::endl;
-    	} else{
-    		conn->write(char(Protocol::ANS_NAK));
-    		conn->write(char(Protocol::ERR_NG_DOES_NOT_EXIST));
-    	}
-    	conn->write(char(Protocol::ANS_END));
-    	std::cout << "end sent" << std::endl;
+    		ProtocolViolationException e;
+			throw (e);
+    	} else {
+	    	bool success = database.delete_NG(id);
+	    	conn->write(char(Protocol::ANS_DELETE_NG));
+	    	std::cout << "ans sent" << std::endl;
+	    	if(success == true){
+	    		conn->write(char(Protocol::ANS_ACK));
+	    		std::cout << "ack sent" << std::endl;
+	    	} else{
+	    		conn->write(char(Protocol::ANS_NAK));
+	    		conn->write(char(Protocol::ERR_NG_DOES_NOT_EXIST));
+	    	}
+	    	conn->write(char(Protocol::ANS_END));
+	    	std::cout << "end sent" << std::endl;
+	    }
     	break;
     }
     case char(Protocol::COM_LIST_ART):{
@@ -223,24 +231,28 @@ void process_request(std::shared_ptr<Connection>& conn, Database_interface& data
     	int id = readNumber(conn);
     	if (conn->read() != char(Protocol::COM_END)){
     		//Throw error
-    	} 
-    	conn->write(char(Protocol::ANS_LIST_ART));
-    	try{
-    		auto list_of_articles = database.list_articles(id);
+    		std::cerr << "some error" << std::endl;
+    		ProtocolViolationException e;
+			throw (e);
+    	} else {
+	    	conn->write(char(Protocol::ANS_LIST_ART));
+	    	try{
+	    		auto list_of_articles = database.list_articles(id);
 
-    		conn->write(char(Protocol::ANS_ACK));
-    		writeNumber(conn, list_of_articles.size());
-			for(auto it = list_of_articles.begin(); it != list_of_articles.end(); ++it){
-				writeNumber(conn, (*it).first);
-				writeString(conn, (*it).second);
-				std::cout << "the THINIG is " << (*it).second << std::endl;
-				std::cout << "the THINIG is " << (*it).second << std::endl;
-			}
-    	} catch(const std::runtime_error& e){
-    		conn->write(char(Protocol::ANS_NAK));
-    		conn->write(char(Protocol::ERR_NG_DOES_NOT_EXIST));
-    	}
-    	conn->write(char(Protocol::ANS_END));
+	    		conn->write(char(Protocol::ANS_ACK));
+	    		writeNumber(conn, list_of_articles.size());
+				for(auto it = list_of_articles.begin(); it != list_of_articles.end(); ++it){
+					writeNumber(conn, (*it).first);
+					writeString(conn, (*it).second);
+					std::cout << "the THINIG is " << (*it).second << std::endl;
+					std::cout << "the THINIG is " << (*it).second << std::endl;
+				}
+	    	} catch(const std::runtime_error& e){
+	    		conn->write(char(Protocol::ANS_NAK));
+	    		conn->write(char(Protocol::ERR_NG_DOES_NOT_EXIST));
+	    	}
+	    	conn->write(char(Protocol::ANS_END));
+	    }
     	break;
     }
     case char(Protocol::COM_CREATE_ART):{
@@ -254,16 +266,20 @@ void process_request(std::shared_ptr<Connection>& conn, Database_interface& data
     	std::string text = readString(conn);
     	if (conn->read() != char(Protocol::COM_END)){
     		//throw error
-    	}
-    	bool success = database.create_article(id_NG, title, author, text);
-    	conn->write(char(Protocol::ANS_CREATE_ART));
-    	if (success == true){
-    		conn->write(char(Protocol::ANS_ACK));
+    		std::cerr << "some error" << std::endl;
+    		ProtocolViolationException e;
+			throw (e);
     	} else{
-    		conn->write(char(Protocol::ANS_NAK));
-    		conn->write(char(Protocol::ERR_NG_DOES_NOT_EXIST));
-    	}
-    	conn->write(char(Protocol::ANS_END));
+	    	bool success = database.create_article(id_NG, title, author, text);
+	    	conn->write(char(Protocol::ANS_CREATE_ART));
+	    	if (success == true){
+	    		conn->write(char(Protocol::ANS_ACK));
+	    	} else{
+	    		conn->write(char(Protocol::ANS_NAK));
+	    		conn->write(char(Protocol::ERR_NG_DOES_NOT_EXIST));
+	    	}
+	    	conn->write(char(Protocol::ANS_END));
+	    }
     	break;
     }
     case char(Protocol::COM_DELETE_ART):{
@@ -273,26 +289,30 @@ void process_request(std::shared_ptr<Connection>& conn, Database_interface& data
     	*/
     	int id_NG = readNumber(conn);
     	int id_art = readNumber(conn);
-    	if (conn->read() == char(Protocol::COM_END)){
+    	if (conn->read() != char(Protocol::COM_END)){
     		//throw error
-    	}
-    	conn->write(char(Protocol::ANS_DELETE_ART));
-    	try{
-    		database.delete_article(id_NG, id_art);
-    		conn->write(char(Protocol::ANS_ACK));
+    		std::cerr << "some error" << std::endl;
+    		ProtocolViolationException e;
+			throw (e);
+    	} else {
+	    	conn->write(char(Protocol::ANS_DELETE_ART));
+	    	try{
+	    		database.delete_article(id_NG, id_art);
+	    		conn->write(char(Protocol::ANS_ACK));
 
-    	} catch(std::runtime_error& e){
-    		conn->write(char(Protocol::ANS_NAK));
-    		std::string error = e.what();
-    		if (error == "no such NG"){
-    			conn->write(char(Protocol::ERR_NG_DOES_NOT_EXIST));
-    		} else if(error == "no such article"){
-    			conn->write(char(Protocol::ERR_ART_DOES_NOT_EXIST));
-    		} else{
-    			std::cout << "Error unknown error." << std::endl;
-    		}
-    	}
-    	conn->write(char(Protocol::ANS_END));
+	    	} catch(std::runtime_error& e){
+	    		conn->write(char(Protocol::ANS_NAK));
+	    		std::string error = e.what();
+	    		if (error == "no such NG"){
+	    			conn->write(char(Protocol::ERR_NG_DOES_NOT_EXIST));
+	    		} else if(error == "no such article"){
+	    			conn->write(char(Protocol::ERR_ART_DOES_NOT_EXIST));
+	    		} else{
+	    			std::cout << "Error unknown error." << std::endl;
+	    		}
+	    	}
+	    	conn->write(char(Protocol::ANS_END));
+	    }
     	break;
     }
     case char(Protocol::COM_GET_ART):{
@@ -302,30 +322,37 @@ void process_request(std::shared_ptr<Connection>& conn, Database_interface& data
     	*/
     	int id_NG = readNumber(conn);
     	int id_art = readNumber(conn);
-    	if (conn->read() == char(Protocol::COM_END)){
+    	if (conn->read() != char(Protocol::COM_END)){
     		//throw error
-    	}
-    	conn->write(char(Protocol::ANS_GET_ART));
-    	try{
-    		std::vector<std::string> article = database.get_article(id_NG, id_art);
-    		conn->write(char(Protocol::ANS_ACK));
-    		for(auto it = article.begin(); it != article.end(); ++it){
-    			writeString(conn, (*it));
-    		} 
+    		std::cerr << "some error" << std::endl;
+    		ProtocolViolationException e;
+			throw (e);
+    	} else {
+	    	conn->write(char(Protocol::ANS_GET_ART));
+	    	try{
+	    		std::vector<std::string> article = database.get_article(id_NG, id_art);
+	    		conn->write(char(Protocol::ANS_ACK));
+	    		for(auto it = article.begin(); it != article.end(); ++it){
+	    			writeString(conn, (*it));
+	    		} 
 
-    	} catch(std::runtime_error& e){
-    		conn->write(char(Protocol::ANS_NAK));
-    		if (e.what() == "no such NG"){
-    			conn->write(char(Protocol::ERR_NG_DOES_NOT_EXIST));
-    		} else{
-    			conn->write(char(Protocol::ERR_ART_DOES_NOT_EXIST));
-    		}
-    	}
-    	conn->write(char(Protocol::ANS_END));
+	    	} catch(std::runtime_error& e){
+	    		conn->write(char(Protocol::ANS_NAK));
+	    		if (e.what() == "no such NG"){
+	    			conn->write(char(Protocol::ERR_NG_DOES_NOT_EXIST));
+	    		} else{
+	    			conn->write(char(Protocol::ERR_ART_DOES_NOT_EXIST));
+	    		}
+	    	}
+	    	conn->write(char(Protocol::ANS_END));
+	    }
     	break;
     }
     case char(Protocol::COM_END):{
     	//throw some error
+    	std::cerr << "some error" << std::endl;
+    	ProtocolViolationException e;
+		throw (e);
     	break;
     }
 	default:{
