@@ -99,10 +99,12 @@ bool Connection::isConnected() const { return my_socket != no_socket; }
 
 void Connection::write(unsigned char ch) const
 {
+        std::cout << "my socket: " << my_socket << std::endl;
         if (my_socket == no_socket) {
                 error("Write attempted on a not properly opened connection");
         }
         int count = ::write(my_socket, &ch, 1);
+        std::cout << "count: " << count << std::endl;
         if (count != 1) {
                 throw ConnectionClosedException();
         }

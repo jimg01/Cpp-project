@@ -2,6 +2,7 @@
 #include<iostream>
 #include<algorithm>
 #include<limits>
+#include <memory>
 
 #include"client.h"
 
@@ -29,13 +30,15 @@ MessageHandler Client::init(const int argc, char* argv[]){
         exit(2);
     }
 
-    Connection conn(argv[1], port);
-    if (!conn.isConnected()) {
+    Connection* temp_conn = new Connection(argv[1], port); 
+    std::shared_ptr<Connection> conn(temp_conn);
+    delete(temp_conn);
+    if (!conn->isConnected()) {
         cerr << "Connection attempt failed" << endl;
         exit(3);
     }
 
-    MessageHandler mess(move(conn));
+    MessageHandler mess(conn);
     return mess;
 }
 
@@ -178,7 +181,9 @@ bool Client::cancelCommand(){
 }
 
 void Client::listNewsGroups(MessageHandler& mess){ 
+    std::cout << "entering case 1" << std::endl;
     mess.sendCode(int(Protocol::COM_LIST_NG));
+    std::cout << "requst sent" << std::endl;
     mess.sendCode(int(Protocol::COM_END));
 
     if(mess.recvCode() == int(Protocol::ANS_LIST_NG)){
