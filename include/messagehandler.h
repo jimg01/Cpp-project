@@ -21,11 +21,11 @@ class MessageHandler {
 
 	private:
 	
-		std::shared_ptr<Connection> conn; // the connection
+		Connection& conn; // the connection
 //		Logger logWindow; // the log window	//ignore for now
 
 		//throws (ConnectionClosedException)
-		void sendByte(int code);
+		void sendByte(unsigned char code);
 
 		//throws (ConnectionClosedException)
 		int recvByte();
@@ -39,7 +39,7 @@ class MessageHandler {
 	 * @param conn
 	 *            The connection to use messages
 	 */
-	MessageHandler(std::shared_ptr<Connection>& conn): conn(conn) {}
+	MessageHandler(Connection& connec): conn(connec) {}
 	// to invoke move constructor, since copy constructors and assignments
 	//  are forbidden in Connection-class!
 	
@@ -60,7 +60,7 @@ class MessageHandler {
 	 * @throws ConnectionClosedException
 	 *             If the server died
 	 */
-	void sendCode(int code); 
+	void sendCode(unsigned char code); 
 	
 
 	/**

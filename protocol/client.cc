@@ -30,10 +30,10 @@ MessageHandler Client::init(const int argc, char* argv[]){
         exit(2);
     }
 
-    Connection* temp_conn = new Connection(argv[1], port); 
-    std::shared_ptr<Connection> conn(temp_conn);
-    delete(temp_conn);
-    if (!conn->isConnected()) {
+    Connection conn(argv[1], port); 
+    
+
+    if (!conn.isConnected()) {
         cerr << "Connection attempt failed" << endl;
         exit(3);
     }
@@ -44,7 +44,7 @@ MessageHandler Client::init(const int argc, char* argv[]){
 
 int Client::getPort(){return port;}
 
-int Client::application(MessageHandler mess){
+int Client::application(MessageHandler& mess){
 	cout << "APPL: Mess connected? " << mess.isConnected() << endl;
     int userInput = -1;
     bool InputCheck = true;
@@ -182,9 +182,10 @@ bool Client::cancelCommand(){
 
 void Client::listNewsGroups(MessageHandler& mess){ 
     std::cout << "entering case 1" << std::endl;
-    mess.sendCode(int(Protocol::COM_LIST_NG));
+    cout << mess.isConnected() << endl;
+    mess.sendCode(static_cast<unsigned char>(Protocol::COM_LIST_NG));
     std::cout << "requst sent" << std::endl;
-    mess.sendCode(int(Protocol::COM_END));
+    mess.sendCode(char(Protocol::COM_END));
 
     if(mess.recvCode() == int(Protocol::ANS_LIST_NG)){
         int n = mess.recvIntParameter();
@@ -549,5 +550,5 @@ int main(int argc, char* argv[]){
     MessageHandler mess = userClient.init(argc,argv);
     //cout << "MAIN: Mess connected? " << int(mess.isConnected()) << endl;
 
-    return userClient.application(move(mess));
+    return userClient.application(mess);
 }

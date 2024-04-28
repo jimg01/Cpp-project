@@ -350,17 +350,17 @@ void process_request(MessageHandler& mess, Database_interface& database){
 }
 
 void serve_one(Server& server, Database_interface& database) {
-	std::cout << "before waitForActivity" << std::endl;
+	//std::cout << "before waitForActivity" << std::endl;
     auto conn = server.waitForActivity();
-    std::cout << "after waitForActivity" << std::endl;
+    //std::cout << "after waitForActivity" << std::endl;
     if (conn != nullptr) {
-    	MessageHandler mess(conn);
-    	std::cout << "efter messagehandler" << std::endl;
+    	//std::cout << "efter messagehandler" << std::endl;
         try {
+            MessageHandler mess(*conn);
             process_request(mess, database);
         } catch (ConnectionClosedException&) {
         	//conn shpould be mess?
-        	std::cout << "innnan deregister" << std::endl;
+        	//std::cout << "innnan deregister" << std::endl;
             server.deregisterConnection(conn);
             cout << "Client closed connection" << endl;
         }

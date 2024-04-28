@@ -82,7 +82,7 @@ std::string MessageHandler::recvStringParameter(){
 	//StringBuffer result = new StringBuffer(n);
 	std::stringstream result;
 	for (int i = 1; i <= n; i++) {
-		char ch = char(conn->read());
+		char ch = char(conn.read());
 		result << ch;
 		
 //		logWindow.logChar(ch);
@@ -93,8 +93,8 @@ std::string MessageHandler::recvStringParameter(){
 
 
 int MessageHandler::recvByte(){
-	int code = conn->read();
-	if (!conn->isConnected()){//if (code == ::CONNECTION_CLOSED) {
+	int code = conn.read();
+	if (!conn.isConnected()){//if (code == ::CONNECTION_CLOSED) {
 		ConnectionClosedException e;
 		throw (e);	
 	}
@@ -102,7 +102,7 @@ int MessageHandler::recvByte(){
 }
 
 bool MessageHandler::isConnected(){
-	return conn->isConnected();
+	return conn.isConnected();
 }
 	
 int MessageHandler::recvCode(){
@@ -131,9 +131,14 @@ void MessageHandler::sendStringParameter(std::string param){
 
 
 
-void MessageHandler::sendByte(int code) {
+void MessageHandler::sendByte(unsigned char code) {
+    cout << "hej" << endl;
+    cout << "hej" << endl;
+    cout << "hej" << endl;
+    cout << "hej" << endl;
 	try {
-			conn->write(char(code));
+            cout << "hej" << endl;
+			conn.write(code);
 			std::cout << char(code) << " or as a number: " << code << std::endl;
 		} catch (ConnectionClosedException e) {
 			throw (e);
@@ -141,7 +146,11 @@ void MessageHandler::sendByte(int code) {
 }
 
 
-void MessageHandler::sendCode(int code) {
+void MessageHandler::sendCode(unsigned char code) {
+    cout << "hdsdej" << endl;
+    cout << "hdsdej" << endl;
+    cout << "hesdsj" << endl;
+    cout << "hsdsdj" << endl;
 	sendByte(code);
 	//logWindow.logCode(code);
 }
