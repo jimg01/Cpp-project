@@ -52,7 +52,7 @@ distclean: clean
 	make -C example distclean
 	make -C protocol distclean
 	make -C diskbase distclean
-
+	make -C ourserver distclean
 
 # Include the *.d files
 -include $(SRC:.cc=.d)
