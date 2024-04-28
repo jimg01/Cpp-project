@@ -27,7 +27,7 @@ LDFLAGS   = -g -L../lib
 LDLIBS = -lclientserver
 
 # Targets
-PROGS = client testHandler
+PROGS = client
 
 all: $(PROGS)
 

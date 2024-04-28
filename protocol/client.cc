@@ -2,6 +2,7 @@
 #include<iostream>
 #include<algorithm>
 #include<limits>
+#include<vector>
 
 #include"client.h"
 #include"connection.h"
@@ -223,7 +224,7 @@ void Client::createNewsGroups(MessageHandler& mess){
 
 		//can throw ClosedConnectionException!
         if(mess.recvCode() == int(Protocol::ANS_CREATE_NG)){	
-        	cout << "server created nresgrupp" << endl;
+        	//cout << "server created nresgrupp" << endl;
             int answerCode = mess.recvCode();
             if(answerCode == int(Protocol::ANS_ACK)){
                 cout << "New NewsGroup created. Name: " << nameOfNewsGroup << endl;
@@ -371,13 +372,14 @@ void Client::createArticle(MessageHandler& mess){
         inputCheck = true;
 
         while(inputCheck){
-            cout << "Enter Article text: ";
-            getline(cin, articleText);                  // Must fix article that has line-breaks
-            if(articleText == ""){
-                error(7);
-            }else{
-                inputCheck = false;
+            cout << "Enter Article text (end of Article write \"end\" on the last line): ";
+            string articleLine;
+            getline(cin, articleLine);                  // Must fix article that has line-breaks
+            while(articleLine.compare("end") != 0){
+                articleText.append(articleLine + "\n");
+                getline(cin, articleLine);
             }
+            inputCheck = false;
         }                  
 
         if(!cancelCommand()){
@@ -395,7 +397,8 @@ void Client::createArticle(MessageHandler& mess){
                     cout << "New Article created." << endl;
                     cout << "Name: " << articleName << endl;
                     cout << "Author: " << articleAuthor << endl;
-                    cout << "Text: " << articleText << endl;
+                    cout << "Text: " << endl;
+                    cout << articleText << endl;
                 }else if(answerCode == int(Protocol::ANS_NAK)){
                     if(mess.recvCode() == int(Protocol::ERR_NG_DOES_NOT_EXIST)){
                         cout << "New Article not created." << endl;
@@ -508,7 +511,7 @@ void Client::showArticle(MessageHandler& mess){
                         cout << "Article (" << idOfArticle << "):" << endl;
                         cout << "Name: " << articleName << endl;
                         cout << "Author: " << articleAuthor << endl;
-                        cout << "Text: " << articleText << endl;
+                        cout << "Text: " << endl << articleText << endl;
 
                     }else if(answerCode == int(Protocol::ANS_NAK)){
                         int answerErrorCode = mess.recvCode();

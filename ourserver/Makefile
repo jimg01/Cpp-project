@@ -30,7 +30,7 @@ all: $(PROGS)
 
 # Targets rely on implicit rules for compiling and linking
 # The dependency on libclientserver.a is not defined.
-ourserver: ourserver.o inmemorydatabase.o newsgroup.o article.o
+ourserver: ourserver.o inmemorydatabase.o newsgroup.o article.o 
 #inmemorydatabase: inmemorydatabase.o newsgroup.o article.o
 
 SRC = $(wildcard *.cc)
