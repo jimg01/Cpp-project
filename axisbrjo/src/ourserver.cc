@@ -408,8 +408,6 @@ void serve_one(Server& server, Database_interface& database) {
     }
 }
 
-
-
 int main(int argc, char* argv[]){
 
     std::shared_ptr<Database_interface> database;
