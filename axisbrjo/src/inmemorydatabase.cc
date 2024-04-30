@@ -4,7 +4,7 @@
 
 InMemoryDatabase::InMemoryDatabase(){
 	news_groups = std::map<int, NewsGroup>();
-	next_free_index = 0;
+	next_free_index = 1;
 }
 
 InMemoryDatabase::~InMemoryDatabase() = default;
