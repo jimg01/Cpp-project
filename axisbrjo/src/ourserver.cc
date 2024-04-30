@@ -391,35 +391,37 @@ void serve_one(Server& server, Database_interface& database) {
 
 int main(int argc, char* argv[]){
 	
-    //int databasetype;
-    // try
-    // {
-    //     databasetype = std::stoi(argv[2]);
-    // }
-    // catch(const std::exception& e)
-    // {
-    //     cerr << "Wrong format for databasetype number. " << e.what() << endl;
-    //     exit(2);
-    // }
+    int databasetype;
+    try
+    {
+        databasetype = std::stoi(argv[2]);
+    }
+    catch(const std::exception& e)
+    {
+        cerr << "Wrong format for databasetype number. " << e.what() << endl;
+        exit(2);
+    }
     
-    InMemoryDatabase database{};
+    // InMemoryDatabase database{};
 
     // Database_interface database;
     // database = InMemoryDatabase{};
 
-    // if(databasetype == 1){
-	//     database = InMemoryDatabase{};
-    // }else if(databasetype == 2){
-    //     database = DiskDatabase{};
-    // }else{
-    //     cerr << "Databasetype number must be 1 or 2." << endl;
-    //     exit(2);
-    // }
+    std::unique_ptr<Database_interface> database;
+
+    if(databasetype == 1){
+	    database = std::make_unique<InMemoryDatabase>();
+    }else if(databasetype == 2){
+        database = std::make_unique<DiskDatabase>();
+    }else{
+        cerr << "Databasetype number must be 1 or 2." << endl;
+        exit(2);
+    }
 
     auto server = init(argc, argv);
 
     while (true) {
-        serve_one(server, database);
+        serve_one(server, *database);
     }
     return 0;
 }
