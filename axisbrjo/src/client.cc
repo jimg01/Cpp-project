@@ -44,7 +44,7 @@ MessageHandler Client::init(const int argc, char* argv[]){
 int Client::getPort(){return port;}
 
 int Client::application(MessageHandler& mess){
-	//cout << "APPL: Mess connected? " << mess.isConnected() << endl;
+
     int userInput = -1;
     bool InputCheck = true;
 
@@ -550,12 +550,9 @@ void Client::showArticle(MessageHandler& mess){
 
 
 int main(int argc, char* argv[]){
-    // cout << "Choose a port for your Client: ";
-    // int port;
-    // cin >> port;
+    
     Client userClient;
     MessageHandler mess = userClient.init(argc,argv);
-    //cout << "MAIN: Mess connected? " << int(mess.isConnected()) << endl;
 
     return userClient.application(mess);
 }

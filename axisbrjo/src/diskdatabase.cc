@@ -1,9 +1,9 @@
 #include "diskdatabase.h"
 #include <iostream>
 #include <algorithm>
-#include<cstdlib>
-#include<filesystem>
-#include<fstream>
+#include <cstdlib>
+#include <filesystem>
+#include <fstream>
 #include <exception>
 
 using std::endl;
@@ -108,13 +108,11 @@ std::vector<std::pair<int, std::string>> DiskDatabase::list_articles(int id_NG){
 			try{
 				std::pair<int, std::string> p(std::stoi(id), name);
 				list.push_back(p);	
-			} catch (std::invalid_argument e){
+			} catch (std::invalid_argument& e){
 				//just skip file
 			}
-			
-				
 		}		
-	} catch (fs::filesystem_error e){
+	} catch (fs::filesystem_error& e){
 		throw std::runtime_error("no such newsgroup");
 	}
 

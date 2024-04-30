@@ -18,10 +18,10 @@ class Article{
 		const std::string& get_text() const;
 		
 	private:
+        int id;
 		std::string title;
 		std::string author;
 		std::string text;
-		int id;
 
 	
 };

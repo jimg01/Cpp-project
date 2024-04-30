@@ -4,6 +4,7 @@
 #include "server.h"
 #include "database_interface.h"
 #include "inmemorydatabase.h"
+#include "diskdatabase.h"
 #include "protocol.h"
 #include "protocolviolationexception.h"
 
@@ -99,8 +100,8 @@ void writeString(const std::shared_ptr<Connection>& conn, const string& s)
 
 Server init(int argc, char* argv[])
 {
-        if (argc != 2) {
-                cerr << "Usage: myserver port-number" << endl;
+        if (argc != 3) {
+                cerr << "Usage: myserver port-number database-type(1=inmemory,2=disk)" << endl;
                 exit(1);
         }
 
@@ -306,7 +307,8 @@ void process_request(std::shared_ptr<Connection>& conn, Database_interface& data
 
 	    	} catch(std::runtime_error& e){
 	    		conn->write(char(Protocol::ANS_NAK));
-	    		if (e.what() == "no such NG"){
+                std::string what = e.what();
+	    		if (what == "no such NG"){
 	    			conn->write(char(Protocol::ERR_NG_DOES_NOT_EXIST));
 	    		} else{
 	    			conn->write(char(Protocol::ERR_ART_DOES_NOT_EXIST));
@@ -347,8 +349,31 @@ void serve_one(Server& server, Database_interface& database) {
 
 
 int main(int argc, char* argv[]){
-	//create empty database type 1
-	InMemoryDatabase database{};
+	
+    int databasetype;
+    // try
+    // {
+    //     databasetype = std::stoi(argv[2]);
+    // }
+    // catch(const std::exception& e)
+    // {
+    //     cerr << "Wrong format for databasetype number. " << e.what() << endl;
+    //     exit(2);
+    // }
+    
+    InMemoryDatabase database{};
+
+    // Database_interface database;
+    // database = InMemoryDatabase{};
+
+    // if(databasetype == 1){
+	//     database = InMemoryDatabase{};
+    // }else if(databasetype == 2){
+    //     database = DiskDatabase{};
+    // }else{
+    //     cerr << "Databasetype number must be 1 or 2." << endl;
+    //     exit(2);
+    // }
 
     auto server = init(argc, argv);
 
