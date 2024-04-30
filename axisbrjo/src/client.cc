@@ -37,7 +37,9 @@ MessageHandler Client::init(const int argc, char* argv[]){
         exit(3);
     }
 
-    MessageHandler mess(move(conn));
+    MessageHandler mess{};
+    std::shared_ptr<Connection> connPtr = std::make_shared<Connection>(move(conn));
+    mess.setConnection(connPtr);
     return mess;
 }
 

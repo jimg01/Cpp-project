@@ -37,7 +37,7 @@ all: $(PROGS_SRC)
 # The dependency on libclientserver.a is not defined.
 
 src/client: src/client.o src/messagehandler.o src/connection.o 
-src/ourserver: src/ourserver.o src/connection.o src/diskdatabase.o src/inmemorydatabase.o src/newsgroup.o src/article.o src/server.o
+src/ourserver: src/ourserver.o src/connection.o src/diskdatabase.o src/inmemorydatabase.o src/newsgroup.o src/article.o src/server.o src/messagehandler.o
 
 SRC = $(wildcard $(SOURCE_DIR)/*.cc)
 

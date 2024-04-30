@@ -8,6 +8,7 @@
 #include <stdexcept>
 #include <string>
 #include <sstream>
+#include <memory>
 
 using std::string;
 
@@ -19,8 +20,10 @@ using std::string;
 class MessageHandler {
 
 	private:
+
+        std::shared_ptr<Connection> connPtr;
 	
-		Connection conn; // the connection
+		//Connection conn; // the connection
 //		Logger logWindow; // the log window	//ignore for now
 
 		//throws (ConnectionClosedException)
@@ -38,7 +41,13 @@ class MessageHandler {
 	 * @param conn
 	 *            The connection to use messages
 	 */
-	MessageHandler(Connection conn): conn(std::move(conn)) {}
+	MessageHandler(std::shared_ptr<Connection>& connec): connPtr(std::move(connec)) {}
+
+    //MessageHandler(Connection& connec): conn(std::move(connec)) {}
+
+    MessageHandler() = default;
+
+    void setConnection(std::shared_ptr<Connection>& conn);
 	// to invoke move constructor, since copy constructors and assignments
 	//  are forbidden in Connection-class!
 	
