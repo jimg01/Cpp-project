@@ -98,10 +98,10 @@ void writeString(const std::shared_ptr<Connection>& conn, const string& s)
     }
 }
 
-Server init(int argc, char* argv[])
+Server init(int argc, char* argv[], std::shared_ptr<Database_interface>& dataPtr)
 {
         if (argc != 3) {
-                cerr << "Usage: myserver port-number database-type(1=inmemory,2=disk)" << endl;
+                cerr << "Usage: ourserver port-number database-number(1=inmemory,2=disk)" << endl;
                 exit(1);
         }
 
@@ -118,6 +118,27 @@ Server init(int argc, char* argv[])
                 cerr << "Server initialization error." << endl;
                 exit(3);
         }
+
+        int databasetype;
+        try
+        {
+            databasetype = std::stoi(argv[2]);
+        }
+        catch(const std::exception& e)
+        {
+            cerr << "Wrong format for database number. " << e.what() << endl;
+            exit(4);
+        }
+
+        if(databasetype == 1){
+    	    dataPtr = std::make_unique<InMemoryDatabase>();
+        }else if(databasetype == 2){
+            dataPtr = std::make_unique<DiskDatabase>();
+        }else{
+            cerr << "Database number must be 1 or 2." << endl;
+            exit(5);
+        }
+
         return server;
 }
 
@@ -390,35 +411,10 @@ void serve_one(Server& server, Database_interface& database) {
 
 
 int main(int argc, char* argv[]){
-	
-    int databasetype;
-    try
-    {
-        databasetype = std::stoi(argv[2]);
-    }
-    catch(const std::exception& e)
-    {
-        cerr << "Wrong format for databasetype number. " << e.what() << endl;
-        exit(2);
-    }
-    
-    // InMemoryDatabase database{};
 
-    // Database_interface database;
-    // database = InMemoryDatabase{};
+    std::shared_ptr<Database_interface> database;
 
-    std::unique_ptr<Database_interface> database;
-
-    if(databasetype == 1){
-	    database = std::make_unique<InMemoryDatabase>();
-    }else if(databasetype == 2){
-        database = std::make_unique<DiskDatabase>();
-    }else{
-        cerr << "Databasetype number must be 1 or 2." << endl;
-        exit(2);
-    }
-
-    auto server = init(argc, argv);
+    auto server = init(argc, argv, database);
 
     while (true) {
         serve_one(server, *database);
