@@ -138,7 +138,7 @@ bool DiskDatabase::create_article(int id_NG, std::string& name, std::string& aut
 	
 	//check and go into correct newsgroup
 	if(!goto_NG(id_NG)){
-		throw std::runtime_error("no such newsgroup");
+		return false;
 	}
 
 	
@@ -179,12 +179,12 @@ void DiskDatabase::delete_article(int id_NG, int id_article){ // make void?
 	
 	//check and go into correct newsgroup
 	if(!goto_NG(id_NG)){
-		throw std::runtime_error("no such newsgroup");
+		throw std::runtime_error("no such NG");
 	}
 	
 	//check is file exists
 	if(!fs::exists(fs::current_path() / filename) ){ 
-		throw std::runtime_error("no such newsgroup");
+		throw std::runtime_error("no such article");
 	}
 
 	//remove article
@@ -202,7 +202,7 @@ std::vector<std::string> DiskDatabase::get_article(int id_NG, int id_article){
 	
 	//check and go into correct newsgroup
 	if(!goto_NG(id_NG)){
-		throw std::runtime_error("no such newsgroup");
+		throw std::runtime_error("no such NG");
 	}
 	
 	//check if file exists

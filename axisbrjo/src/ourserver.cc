@@ -1,4 +1,12 @@
-#include "ourserver.h"
+#include "connection.h"
+#include "connectionclosedexception.h"
+#include "server.h"
+#include "database_interface.h"
+#include "inmemorydatabase.h"
+#include "diskdatabase.h"
+#include "protocol.h"
+#include "protocolviolationexception.h"
+#include "messagehandler.h"
 
 #include <iostream>
 #include <memory>
