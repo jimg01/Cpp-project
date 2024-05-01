@@ -1,5 +1,10 @@
+#ifndef MESSAGEHANDLER_H
+#define MESSAGEHANDLER_H
+
+
 #include "connection.h"
 #include "connectionclosedexception.h"
+#include "protocolviolationexception.h"
 #include "protocol.h"
 
 
@@ -21,16 +26,34 @@ class MessageHandler {
 
 	private:
 
-        std::shared_ptr<Connection> connPtr;
-	
-		//Connection conn; // the connection
-//		Logger logWindow; // the log window	//ignore for now
+    std::shared_ptr<Connection> connPtr; // the connection
 
-		//throws (ConnectionClosedException)
-		void sendByte(int code);
+    //Logger logWindow; // the log window	//ignore for now
 
-		//throws (ConnectionClosedException)
-		int recvByte();
+	//throws (ConnectionClosedException)
+	void sendByte(const int code);
+
+	//throws (ConnectionClosedException)
+	int recvByte();
+
+    /**
+	 * Transmit an int value, according to the protocol.
+	 * 
+	 * @param value
+	 *            The value to transmit
+	 * @throws ConnectionClosedException
+	 *             If the server died
+	 */
+	void sendInt(const int value);
+
+    /**
+	 * Receive an int value from the server.
+	 * 
+	 * @return The int value
+	 * @throws ConnectionClosedException
+	 *             If the server died
+	 */
+	int recvInt();
 
 	public:
 
@@ -38,18 +61,13 @@ class MessageHandler {
 	/**
 	 * Create a message handler.
 	 * 
-	 * @param conn
-	 *            The connection to use messages
-	 */
-	MessageHandler(std::shared_ptr<Connection>& connec): connPtr(std::move(connec)) {}
-
-    //MessageHandler(Connection& connec): conn(std::move(connec)) {}
-
+	 * 
+     * 
+    **/
     MessageHandler() = default;
 
     void setConnection(std::shared_ptr<Connection>& conn);
-	// to invoke move constructor, since copy constructors and assignments
-	//  are forbidden in Connection-class!
+	
 	
 	
 	/**
@@ -68,18 +86,7 @@ class MessageHandler {
 	 * @throws ConnectionClosedException
 	 *             If the server died
 	 */
-	void sendCode(int code); 
-	
-
-	/**
-	 * Transmit an int value, according to the protocol.
-	 * 
-	 * @param value
-	 *            The value to transmit
-	 * @throws ConnectionClosedException
-	 *             If the server died
-	 */
-	void sendInt(int value);
+	void sendCode(const int code); 
 	
 	/**
 	 * Transmit an int parameter, according to the protocol.
@@ -89,7 +96,7 @@ class MessageHandler {
 	 * @throws ConnectionClosedException
 	 *             If the server died
 	 */
-	void sendIntParameter(int param);
+	void sendIntParameter(const int param);
 
 	/**
 	 * Transmit a string parameter, according to the protocol.
@@ -99,7 +106,7 @@ class MessageHandler {
 	 * @throws ConnectionClosedException
 	 *             If the server died
 	 */
-	void sendStringParameter(std::string param);
+	void sendStringParameter(const std::string param);
 	
 	/**
 	 * Receive a command code or an error code from the server.
@@ -109,16 +116,6 @@ class MessageHandler {
 	 *             If the server died
 	 */
 	int recvCode();
-
-
-	/**
-	 * Receive an int value from the server.
-	 * 
-	 * @return The int value
-	 * @throws ConnectionClosedException
-	 *             If the server died
-	 */
-	int recvInt();
 	
 	/**
 	 * Receive an int parameter from the server.
@@ -141,3 +138,5 @@ class MessageHandler {
 
 
 };
+
+#endif

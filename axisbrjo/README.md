@@ -27,7 +27,7 @@ In the first one, start the server with `ourserver <port> <database-type>`, e.g.
 -
 
 This will start a server with a inmemory-database, (database-type = 1(inmemory), 2(disk)).
-If you start a diskdatabase a database directory will be created where the database is stored.
+If you start a diskdatabase a database directory will be created where the server was started from.
 To remove/reset the diskdatabase, just remove the directory "database" before starting the server.
 
 In the other one, start the client with `client <server> <port>`, e.g.,

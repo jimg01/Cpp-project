@@ -1,19 +1,8 @@
-/* myserver.cc: sample server program */
-#include "connection.h"
-#include "connectionclosedexception.h"
-#include "server.h"
-#include "database_interface.h"
-#include "inmemorydatabase.h"
-#include "diskdatabase.h"
-#include "protocol.h"
-#include "protocolviolationexception.h"
-#include "messagehandler.h"
+#include "ourserver.h"
 
-#include <cstdlib>
 #include <iostream>
 #include <memory>
 #include <stdexcept>
-#include <string>
 
 using std::string;
 using std::cout;
@@ -315,7 +304,7 @@ void process_request(MessageHandler& mess, Database_interface& database){
 	}
 }
 
-void serve_one(Server& server, Database_interface& database) {
+void running_server(Server& server, Database_interface& database) {
     auto conn = server.waitForActivity();
     if (conn != nullptr) {
         try {
@@ -340,7 +329,7 @@ int main(int argc, char* argv[]){
     auto server = init(argc, argv, database);
 
     while (true) {
-        serve_one(server, *database);
+        running_server(server, *database);
     }
     return 0;
 }

@@ -5,7 +5,6 @@
 #include<vector>
 
 #include"client.h"
-#include"connection.h"
 
 using std::string;
 using std::cin;

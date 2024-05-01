@@ -1,7 +1,3 @@
-#include "connection.h"	//remove here?
-#include "connectionclosedexception.h"
-#include "protocolviolationexception.h"
-#include "protocol.h"
 #include "messagehandler.h"
 
 #include <cstdlib>
@@ -119,7 +115,7 @@ int MessageHandler::recvCode(){
 //----------SEND-------------
 
 
-void MessageHandler::sendStringParameter(std::string param){
+void MessageHandler::sendStringParameter(const std::string param){
 	sendCode(int(Protocol::PAR_STRING));
 	sendInt(param.length());
 	for (long unsigned int i = 0; i < param.length(); i++) {
@@ -131,7 +127,7 @@ void MessageHandler::sendStringParameter(std::string param){
 
 
 
-void MessageHandler::sendByte(int code) {
+void MessageHandler::sendByte(const int code) {
 	try {
 			connPtr->write(char(code));
 			//std::cout << char(code) << " or as a number: " << code << std::endl;
@@ -141,13 +137,13 @@ void MessageHandler::sendByte(int code) {
 }
 
 
-void MessageHandler::sendCode(int code) {
+void MessageHandler::sendCode(const int code) {
 	sendByte(code);
 	//logWindow.logCode(code);
 }
 
 
-void MessageHandler::sendInt(int value) {
+void MessageHandler::sendInt(const int value) {
 		sendByte((value >> 24) & 0xFF);
 //		logWindow.logByte((value >> 24) & 0xFF);
 		sendByte((value >> 16) & 0xFF);
@@ -158,7 +154,7 @@ void MessageHandler::sendInt(int value) {
 //		logWindow.logByte(value & 0xFF);
 	}
 
-void MessageHandler::sendIntParameter(int param) {
+void MessageHandler::sendIntParameter(const int param) {
 	sendCode(int(Protocol::PAR_NUM));
 	sendInt(param);
 }

@@ -2,9 +2,6 @@
 #define CLIENT_H
 
 #include"messagehandler.h"
-#include"connection.h"
-#include"protocol.h"
-
 
 class Client{
     public:
@@ -26,7 +23,6 @@ class Client{
     void deleteArticle(MessageHandler&);
     void showArticle(MessageHandler&);
     int port;
-
 
 };
 
