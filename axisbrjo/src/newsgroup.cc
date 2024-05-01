@@ -44,25 +44,4 @@ const Article NewsGroup::get_article(int id){ //throws error if no such article 
 	return article;
 }
 
-std::string NewsGroup::to_string(){
-
-	return "not implemented";
-	/*
-	std::string s = "Group Name: " + name + " Id: " + std::to_string(id)
-				+ "\nNumber of Articles: " + std::to_string(NG_next_free_index -1);
-				
-	if(NG_next_free_index != 1){
-		s.append("\nArticles:\n");
-		for (auto& article : articles){
-			Article ab = article.second();
-			std::string a = ab.to_string();
-			std::string id = std::to_string(article.first());
-			s.append(std::to_string(article.first()) + " " + a);
-		}
-	}
-	return s;
-
-	*/
-}
-
 
