@@ -36,12 +36,3 @@ const std::string& Article::get_author() const{
 const std::string& Article::get_text() const{
 	return text;
 }
-
-std::string Article::to_string(){
-	return "Title: " + title + "\nAuthor: " + author
-		 + "\nId: " + std::to_string(id) + "\nText: " + text;
-			
-}
-
-	
-
