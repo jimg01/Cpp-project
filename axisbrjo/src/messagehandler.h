@@ -86,7 +86,7 @@ class MessageHandler {
 	 * @throws ConnectionClosedException
 	 *             If the server died
 	 */
-	void sendCode(const int code); 
+	void sendCode(const char code); 
 	
 	/**
 	 * Transmit an int parameter, according to the protocol.
@@ -115,7 +115,7 @@ class MessageHandler {
 	 * @throws ConnectionClosedException
 	 *             If the server died
 	 */
-	int recvCode();
+	char recvCode();
 	
 	/**
 	 * Receive an int parameter from the server.

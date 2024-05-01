@@ -101,8 +101,8 @@ bool MessageHandler::isConnected(){
 	return connPtr->isConnected();
 }
 	
-int MessageHandler::recvCode(){
-	int code = recvByte();
+char MessageHandler::recvCode(){
+	char code = recvByte();
 //	logWindow.logCode(code);
 	return code;
 }
@@ -137,7 +137,7 @@ void MessageHandler::sendByte(const int code) {
 }
 
 
-void MessageHandler::sendCode(const int code) {
+void MessageHandler::sendCode(const char code) {
 	sendByte(code);
 	//logWindow.logCode(code);
 }

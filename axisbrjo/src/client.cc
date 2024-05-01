@@ -182,10 +182,10 @@ bool Client::cancelCommand(){
 }
 
 void Client::listNewsGroups(MessageHandler& mess){ 
-    mess.sendCode(int(Protocol::COM_LIST_NG));
-    mess.sendCode(int(Protocol::COM_END));
+    mess.sendCode(char(Protocol::COM_LIST_NG));
+    mess.sendCode(char(Protocol::COM_END));
 
-    if(mess.recvCode() == int(Protocol::ANS_LIST_NG)){
+    if(mess.recvCode() == char(Protocol::ANS_LIST_NG)){
         int n = mess.recvIntParameter();
         if(n != 0){
             cout << "NewsGroups:" << endl;
@@ -196,7 +196,7 @@ void Client::listNewsGroups(MessageHandler& mess){
         }else {
             cout << "No NewsGroups exists" << endl;
         }
-        if(mess.recvCode() != int(Protocol::ANS_END)){
+        if(mess.recvCode() != char(Protocol::ANS_END)){
             error(-1);
         }
     }else{
@@ -221,18 +221,18 @@ void Client::createNewsGroups(MessageHandler& mess){
 
     if(!cancelCommand()){	// added "!" for the naming and output to make more sense
 		
-        mess.sendCode(int(Protocol::COM_CREATE_NG));
+        mess.sendCode(char(Protocol::COM_CREATE_NG));
         mess.sendStringParameter(nameOfNewsGroup);
-        mess.sendCode(int(Protocol::COM_END));
+        mess.sendCode(char(Protocol::COM_END));
 
 		//can throw ClosedConnectionException!
-        if(mess.recvCode() == int(Protocol::ANS_CREATE_NG)){	
+        if(mess.recvCode() == char(Protocol::ANS_CREATE_NG)){	
         	//cout << "server created nresgrupp" << endl;
             int answerCode = mess.recvCode();
-            if(answerCode == int(Protocol::ANS_ACK)){
+            if(answerCode == char(Protocol::ANS_ACK)){
                 cout << "New NewsGroup created. Name: " << nameOfNewsGroup << endl;
-            }else if(answerCode == int(Protocol::ANS_NAK)){
-                if(mess.recvCode() == int(Protocol::ERR_NG_ALREADY_EXISTS)){
+            }else if(answerCode == char(Protocol::ANS_NAK)){
+                if(mess.recvCode() == char(Protocol::ERR_NG_ALREADY_EXISTS)){
                     cout << "Invalid Input." << endl;
                     cout << "Reason: NewsGroup already exists." << endl;
                 }else{
@@ -241,7 +241,7 @@ void Client::createNewsGroups(MessageHandler& mess){
             }else{
                 error(-1);
             }
-            if(mess.recvCode() != int(Protocol::ANS_END)){
+            if(mess.recvCode() != char(Protocol::ANS_END)){
                 error(-1);
             }
         }else{
@@ -259,16 +259,16 @@ void Client::deleteNewsGroups(MessageHandler& mess){
         cin.ignore();
 
         if(!cancelCommand()){
-            mess.sendCode(int(Protocol::COM_DELETE_NG));
+            mess.sendCode(char(Protocol::COM_DELETE_NG));
             mess.sendIntParameter(idOfNewsGroup);
-            mess.sendCode(int(Protocol::COM_END));
+            mess.sendCode(char(Protocol::COM_END));
 
-            if(mess.recvCode() == int(Protocol::ANS_DELETE_NG)){
+            if(mess.recvCode() == char(Protocol::ANS_DELETE_NG)){
                 int answerCode = mess.recvCode();
-                if(answerCode == int(Protocol::ANS_ACK)){
+                if(answerCode == char(Protocol::ANS_ACK)){
                     cout << "NewsGroup (" << idOfNewsGroup << ") was deleted." << endl;
-                }else if(answerCode == int(Protocol::ANS_NAK)){
-                    if(mess.recvCode() == int(Protocol::ERR_NG_DOES_NOT_EXIST)){
+                }else if(answerCode == char(Protocol::ANS_NAK)){
+                    if(mess.recvCode() == char(Protocol::ERR_NG_DOES_NOT_EXIST)){
                         cout << "Invalid Input." << endl;
                         cout << "Reason: NewsGroup (" << idOfNewsGroup << ") does not exists." << endl;
                     }else{
@@ -277,7 +277,7 @@ void Client::deleteNewsGroups(MessageHandler& mess){
                 }else{
                     error(-1);
                 }
-                if(mess.recvCode() != int(Protocol::ANS_END)){
+                if(mess.recvCode() != char(Protocol::ANS_END)){
                     error(-1);
                 }
             }else{
@@ -300,13 +300,13 @@ void Client::listArticle(MessageHandler& mess){
         cin.ignore();
 
         if(true){
-            mess.sendCode(int(Protocol::COM_LIST_ART));
+            mess.sendCode(char(Protocol::COM_LIST_ART));
             mess.sendIntParameter(idOfNewsGroupArticle);
-            mess.sendCode(int(Protocol::COM_END));
+            mess.sendCode(char(Protocol::COM_END));
 
-            if(mess.recvCode() == int(Protocol::ANS_LIST_ART)){
+            if(mess.recvCode() == char(Protocol::ANS_LIST_ART)){
                 int answerCode = mess.recvCode();
-                if(answerCode == int(Protocol::ANS_ACK)){
+                if(answerCode == char(Protocol::ANS_ACK)){
                     int n = mess.recvIntParameter();
                     if(n != 0){
                         cout << "Articles:" << endl;
@@ -317,8 +317,8 @@ void Client::listArticle(MessageHandler& mess){
                     }else {
                         cout << "No Articles exists in Newsgroup (" << idOfNewsGroupArticle << ")" << endl;
                     }
-                }else if(answerCode == int(Protocol::ANS_NAK)){
-                    if(mess.recvCode() == int(Protocol::ERR_NG_DOES_NOT_EXIST)){
+                }else if(answerCode == char(Protocol::ANS_NAK)){
+                    if(mess.recvCode() == char(Protocol::ERR_NG_DOES_NOT_EXIST)){
                         cout << "Invalid Input." << endl;
                         cout << "Reason: NewsGroup (" << idOfNewsGroupArticle << ") does not exists." << endl;
                     }else{
@@ -327,7 +327,7 @@ void Client::listArticle(MessageHandler& mess){
                 }else{
                     error(-1);
                 }
-                if(mess.recvCode() != int(Protocol::ANS_END)){
+                if(mess.recvCode() != char(Protocol::ANS_END)){
                     error(-1);
                 }
             }else{
@@ -388,23 +388,23 @@ void Client::createArticle(MessageHandler& mess){
 
         if(!cancelCommand()){
 
-            mess.sendCode(int(Protocol::COM_CREATE_ART));
+            mess.sendCode(char(Protocol::COM_CREATE_ART));
             mess.sendIntParameter(idOfNewsGroup);
             mess.sendStringParameter(articleName);
             mess.sendStringParameter(articleAuthor);
             mess.sendStringParameter(articleText);
-            mess.sendCode(int(Protocol::COM_END));
+            mess.sendCode(char(Protocol::COM_END));
 
-            if(mess.recvCode() == int(Protocol::ANS_CREATE_ART)){
+            if(mess.recvCode() == char(Protocol::ANS_CREATE_ART)){
                 int answerCode = mess.recvCode();
-                if(answerCode == int(Protocol::ANS_ACK)){
+                if(answerCode == char(Protocol::ANS_ACK)){
                     cout << "New Article created." << endl;
                     cout << "Name: " << articleName << endl;
                     cout << "Author: " << articleAuthor << endl;
                     cout << "Text: " << endl;
                     cout << articleText << endl;
-                }else if(answerCode == int(Protocol::ANS_NAK)){
-                    if(mess.recvCode() == int(Protocol::ERR_NG_DOES_NOT_EXIST)){
+                }else if(answerCode == char(Protocol::ANS_NAK)){
+                    if(mess.recvCode() == char(Protocol::ERR_NG_DOES_NOT_EXIST)){
                         cout << "Invalid Input." << endl;
                         cout << "Reason: NewsGroup (" << idOfNewsGroup << ") does not exists." << endl;
                     }else{
@@ -413,7 +413,7 @@ void Client::createArticle(MessageHandler& mess){
                 }else{
                     error(-1);
                 }
-                if(mess.recvCode() != int(Protocol::ANS_END)){
+                if(mess.recvCode() != char(Protocol::ANS_END)){
                     error(-1);
                 }
             }else{
@@ -442,21 +442,21 @@ void Client::deleteArticle(MessageHandler& mess){
             cin.ignore();
 
             if(!cancelCommand()){
-                mess.sendCode(int(Protocol::COM_DELETE_ART));
+                mess.sendCode(char(Protocol::COM_DELETE_ART));
                 mess.sendIntParameter(idOfNewsGroup);
                 mess.sendIntParameter(idOfArticle);
-                mess.sendCode(int(Protocol::COM_END));
+                mess.sendCode(char(Protocol::COM_END));
 
-                if(mess.recvCode() == int(Protocol::ANS_DELETE_ART)){
+                if(mess.recvCode() == char(Protocol::ANS_DELETE_ART)){
                     int answerCode = mess.recvCode();
-                    if(answerCode == int(Protocol::ANS_ACK)){
+                    if(answerCode == char(Protocol::ANS_ACK)){
                         cout << "Article (" << idOfArticle << ") was deleted." << endl;
-                    }else if(answerCode == int(Protocol::ANS_NAK)){
+                    }else if(answerCode == char(Protocol::ANS_NAK)){
                         int answerErrorCode = mess.recvCode();
                         cout << "Invalid Input." << endl;
-                        if(answerErrorCode == int(Protocol::ERR_NG_DOES_NOT_EXIST)){
+                        if(answerErrorCode == char(Protocol::ERR_NG_DOES_NOT_EXIST)){
                             cout << "Reason: NewsGroup (" << idOfNewsGroup << ") does not exists." << endl;
-                        }else if(answerErrorCode == int(Protocol::ERR_ART_DOES_NOT_EXIST)){
+                        }else if(answerErrorCode == char(Protocol::ERR_ART_DOES_NOT_EXIST)){
                             cout << "Reason: Article (" << idOfArticle << ") does not exists." << endl;
                         }else{
                             error(-1);
@@ -464,7 +464,7 @@ void Client::deleteArticle(MessageHandler& mess){
                     }else{
                         error(-1);
                     }
-                    if(mess.recvCode() != int(Protocol::ANS_END)){
+                    if(mess.recvCode() != char(Protocol::ANS_END)){
                         error(-1);
                     }
                 }else{
@@ -497,14 +497,14 @@ void Client::showArticle(MessageHandler& mess){
             cin.ignore();
 
             if(true){
-                mess.sendCode(int(Protocol::COM_GET_ART));
+                mess.sendCode(char(Protocol::COM_GET_ART));
                 mess.sendIntParameter(idOfNewsGroup);
                 mess.sendIntParameter(idOfArticle);
-                mess.sendCode(int(Protocol::COM_END));
+                mess.sendCode(char(Protocol::COM_END));
 
-                if(mess.recvCode() == int(Protocol::ANS_GET_ART)){
+                if(mess.recvCode() == char(Protocol::ANS_GET_ART)){
                     int answerCode = mess.recvCode();
-                    if(answerCode == int(Protocol::ANS_ACK)){
+                    if(answerCode == char(Protocol::ANS_ACK)){
                         
                         string articleName, articleAuthor, articleText;
 
@@ -517,12 +517,12 @@ void Client::showArticle(MessageHandler& mess){
                         cout << "Author: " << articleAuthor << endl;
                         cout << "Text: " << endl << articleText << endl;
 
-                    }else if(answerCode == int(Protocol::ANS_NAK)){
+                    }else if(answerCode == char(Protocol::ANS_NAK)){
                         int answerErrorCode = mess.recvCode();
                         cout << "Invalid Input." << endl;
-                        if(answerErrorCode == int(Protocol::ERR_NG_DOES_NOT_EXIST)){
+                        if(answerErrorCode == char(Protocol::ERR_NG_DOES_NOT_EXIST)){
                             cout << "Reason: NewsGroup (" << idOfNewsGroup << ") does not exists." << endl;
-                        }else if(answerErrorCode == int(Protocol::ERR_ART_DOES_NOT_EXIST)){
+                        }else if(answerErrorCode == char(Protocol::ERR_ART_DOES_NOT_EXIST)){
                             cout << "Reason: Article (" << idOfArticle << ") does not exists." << endl;
                         }else{
                             error(-1);
@@ -530,7 +530,7 @@ void Client::showArticle(MessageHandler& mess){
                     }else{
                         error(-1);
                     }
-                    if(mess.recvCode() != int(Protocol::ANS_END)){
+                    if(mess.recvCode() != char(Protocol::ANS_END)){
                         error(-1);
                     }
                 }else{
