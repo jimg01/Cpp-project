@@ -44,7 +44,7 @@ int MessageHandler::recvInt(){
 
 int MessageHandler::recvIntParameter(){
 	int code = recvCode();
-	if (code != int(Protocol::PAR_NUM)) {
+	if (code != char(Protocol::PAR_NUM)) {
 //		throw ProtocolViolationException("Receive numeric parameter",
 //				Protocol::PAR_NUM, code);
 //		ConnectionClosedException e;
@@ -57,7 +57,7 @@ int MessageHandler::recvIntParameter(){
 
 std::string MessageHandler::recvStringParameter(){
 	int code = recvCode();
-	if (code != int(Protocol::PAR_STRING)) {
+	if (code != char(Protocol::PAR_STRING)) {
 //		throw ProtocolViolationException("Receive string parameter",
 //				Protocol::PAR_STRING, code);
 
@@ -116,7 +116,7 @@ char MessageHandler::recvCode(){
 
 
 void MessageHandler::sendStringParameter(const std::string param){
-	sendCode(int(Protocol::PAR_STRING));
+	sendCode(char(Protocol::PAR_STRING));
 	sendInt(param.length());
 	for (long unsigned int i = 0; i < param.length(); i++) {
 		sendByte(param[i]);

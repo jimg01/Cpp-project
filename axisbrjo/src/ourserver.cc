@@ -308,6 +308,7 @@ void process_request(MessageHandler& mess, Database_interface& database){
     }
 	default:{
 		std::cerr << "no case! wrong integer sent from client!!!" << std::endl;
+        mess.sendCode(char(Protocol::ANS_END));
 	}
 	}
 }
