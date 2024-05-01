@@ -42,13 +42,12 @@ src/ourserver: src/ourserver.o src/connection.o src/diskdatabase.o src/inmemoryd
 SRC = $(wildcard $(SOURCE_DIR)/*.cc)
 
 # Target rule to copy files to bin/
-install:
+install: all
 	-cp $(PROGS_SRC) $(BUILD_DIR)/
 
 
 # Phony targets
 .PHONY: all clean distclean
-
 
 # Standard clean
 clean:
